@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: webapp.infra.tikalk.dev
+  labels:
+    app: webapp
+  name: webapp
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30637
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp
+  type: LoadBalancer

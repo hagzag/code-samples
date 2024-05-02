@@ -1,0 +1,27 @@
+version: '3'
+
+dotenv:
+- .env
+# - .env
+
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+    - go build -o bin/app main.go
+
+  pkg-part-3:
+    desc: Build the project
+    dir: posts/PGK-part-3
+    cmds:
+    - echo "please makke sure the domain-anem in the annotations is correct / or your kubecontxt is set to the correct cluster for your domain"
+    - echo $KUBECTL_CONTEXT
+    - echo $PWD
+    - kubectl apply -n default -f $PWD
+
+
+
+  help:
+    desc: Show help
+    cmds:
+    - task --list
