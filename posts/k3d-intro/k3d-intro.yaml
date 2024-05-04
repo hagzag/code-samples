@@ -30,14 +30,15 @@ tasks:
       - review security concepts
       - review observability concepts
     cmds:
-    - k3d cluster list | grep '{{.CLUSTER_NAME}}' || k3d cluster create --config config/k3d.yaml
+    - k3d cluster list | grep '{{.CLUSTER_NAME}}' || k3d cluster create --config .config/k3d-$CLUSTER_NAME.yaml
     - echo -e "\nYour cluster has been created. Type 'k3d cluster list' to confirm."
     ignore_error: true
     interactive: true
   
   delete-cluster:
     cmds:
-    - k3d cluster delete '{{.CLUSTER_NAME}}'
+    - k3d cluster list
+    - k3d cluster delete $CLUSTER_NAME
 
   hosts-file:
     desc: Adds a line to the hosts file if it doesn't already exist.

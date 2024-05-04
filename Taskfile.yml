@@ -24,6 +24,7 @@ tasks:
     - task: start-k3d
     - task: k3d:dns
     - task: k3d:certs
+
   pkg-part-3:
     desc: Build the project
     dir: posts/PGK-part-3
