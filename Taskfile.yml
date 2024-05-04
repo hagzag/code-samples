@@ -8,7 +8,7 @@ includes:
   # k3d: ./config/tasks/k3d.yaml
   k3d: ./posts/k3d-intro/k3d-intro.yaml
   external-dns: ./posts/PGK-part-3/tasks.yaml
-  
+  coredns: ./posts/coredns/tasks.yaml
 
 silent: true
 
@@ -27,9 +27,14 @@ tasks:
     - task: k3d:certs
 
   external-dns:
-    desc: Build the project
+    desc: Run the external-dns project
     cmds:
     - task: external-dns:pkg-part-3
+
+  coredns:
+    desc: Run the codedns project
+    cmds:
+    - task: coredns:dns-test
 
   help:
     desc: Show help

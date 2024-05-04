@@ -1,0 +1,30 @@
+version: '3'
+
+silent: true
+
+tasks:
+
+  dns-test:
+    cmds:
+    - kubectl config set-context --current --namespace=default --cluster=k3d-$CLUSTER_NAME
+    - kubectl apply -n default -f https://k8s.io/examples/admin/dns/dnsutils.yaml
+    - sleep 90
+    - |
+      # Retrieve the IP address using dig command from dnsutils pod
+      DNS_Q=`kubectl exec -it -n default dnsutils -- dig +short kube-dns.kube-system.svc.cluster.local | tr -d '\n'`
+      # echo $DNS_Q
+      # Get the kube-dns service IP from its service definition
+      KUBEDNS_IP=`kubectl get svc -n kube-system kube-dns -o json | jq -r '.spec.clusterIP' | tr -d '\n'`
+      # echo $KUBEDNS_IP
+      # Compare the two IPs and output OK if they match, Error if they do not
+      if echo "$DNS_Q" | grep -q "$KUBEDNS_IP"; then
+          echo "OK"
+      else
+          echo "Error"
+      fi
+    - kubectl delete -n default -f https://k8s.io/examples/admin/dns/dnsutils.yaml
+    # - |
+    #   DNS_Q=$(kubectl exec -it dnsutils -- dig +short kube-dns.kube-system.svc.cluster.local)
+    #   KUBEDNS_IP=$(kubectl get svc -n kube-system kube-dns -o json | jq -r '.spec.clusterIP')
+
+
