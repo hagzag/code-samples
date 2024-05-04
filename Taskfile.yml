@@ -7,34 +7,29 @@ dotenv:
 includes:
   # k3d: ./config/tasks/k3d.yaml
   k3d: ./posts/k3d-intro/k3d-intro.yaml
+  external-dns: ./posts/PGK-part-3/tasks.yaml
   
 
 silent: true
 
 tasks:
 
-  start-k3d:
+  k3d-intro-insecure:
     desc: Start the k3d cluster
     cmds:
     - task: k3d:cluster-create
 
-  start-secure:
+  k3d-intro:
     desc: Start the k3d cluster
     cmds:
-    - task: start-k3d
+    - task: k3d:cluster-create
     - task: k3d:dns
     - task: k3d:certs
 
-  pkg-part-3:
+  external-dns:
     desc: Build the project
-    dir: posts/PGK-part-3
     cmds:
-    - echo "please makke sure the domain-anem in the annotations is correct / or your kubecontxt is set to the correct cluster for your domain"
-    - echo $KUBECTL_CONTEXT
-    - echo $PWD
-    - kubectl apply -n default -f $PWD
-
-
+    - task: external-dns:pkg-part-3
 
   help:
     desc: Show help
