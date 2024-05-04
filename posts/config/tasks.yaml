@@ -1,0 +1,19 @@
+version: '3'
+
+silent: true
+
+tasks:
+
+  install:
+    desc: Installs reloader + scheduler resources manually on the local cluster
+    dir: config/apps/
+    cmds:
+    - kubectl apply -f reloader.yaml
+    - kubectl apply -f reflector.yaml
+    - kubectl apply -f descheduler.yaml
+
+  rm:
+    dir: config/apps/
+    cmds:
+    - delete -f nginx.yaml
+    ignore_error: true

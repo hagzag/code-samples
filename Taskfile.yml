@@ -13,6 +13,7 @@ includes:
   nginx: ./posts/nginx/tasks.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
+  config-managment: ./posts/config/tasks.yaml
 
 silent: true
 
@@ -59,7 +60,11 @@ tasks:
     - task: start-argocd
     - task: start-nginx
 
-
+  config-managment:
+    desc: Run all tasks
+    cmds:
+    - task: config-managment:install
+    
   help:
     desc: Show help
     cmds:
