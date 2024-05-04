@@ -1,4 +1,4 @@
-# code-samples
+# Code-samples | The code behind the posts ...
 
 This repo was setup to centralize code examples I mention in different blog posts, 
 this is part of my attempt to manage all these snippets / samples in once place.
