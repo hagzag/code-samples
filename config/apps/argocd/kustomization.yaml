@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- base/core/argocd-ingress.yaml
+- https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.9/manifests/install.yaml
+
+components:
+- https://github.com/argoproj-labs/argocd-extensions/manifests
+
+
+namespace: argocd
+# images:
+# - name: quay.io/argoproj/argocd
+#   newTag: v2.8.0
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/source/repoURL
+      value: 'https://github.com/hagzag/code-samples.git'
+    # - op: replace
+    #   path: /spec/source/targetRevision
+    #   value: main
+  target:
+    group: argoproj.io
+    kind: Application
+    name: argocd|
+    version: v1alpha1
+- path: overlay/argocd-svc.yaml
+- path: overlay/argocd-rbac.yaml
+- path: overlay/argocd-cm.yaml
+- path: overlay/argocd-cr.yaml
+- path: overlay/argocd-cmd-params-cm.yaml
+# add gitlab.tikalk.dev ssh keys
+- path: overlay/argocd-ssh-known-hosts-cm.yaml
+
+commonAnnotations:
+  reloader.stakater.com/auto: "true"

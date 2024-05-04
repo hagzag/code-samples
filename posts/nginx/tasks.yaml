@@ -1,0 +1,22 @@
+version: '3'
+
+silent: true
+
+tasks:
+
+  install:
+    desc: Installs nginx resources manually on the local cluster
+    dir: config/apps/
+    preconditions:
+    - sh: 'which kustomize'
+      msg: 'kustomize {{.PATH_ERROR}}'
+    - sh: 'which kubectl'
+      msg: 'kubectl {{.PATH_ERROR}}'
+    cmds:
+    - kubectl apply -f nginx.yaml
+
+  rm:
+    dir: config/apps/
+    cmds:
+    - delete -f nginx.yaml
+    ignore_error: true

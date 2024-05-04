@@ -9,6 +9,10 @@ includes:
   k3d: ./posts/k3d-intro/k3d-intro.yaml
   external-dns: ./posts/PGK-part-3/tasks.yaml
   coredns: ./posts/coredns/tasks.yaml
+  argocd: ./posts/argocd/tasks.yaml
+  nginx: ./posts/nginx/tasks.yaml
+  # common tools for this repo
+  tools: ./config/tasks/tools.yaml
 
 silent: true
 
@@ -35,6 +39,26 @@ tasks:
     desc: Run the codedns project
     cmds:
     - task: coredns:dns-test
+
+  start-argocd:
+    desc: Deploy argocd project
+    cmds:
+    - task: argocd:secret
+    - task: argocd:repo
+    - task: argocd:install
+
+  start-nginx:
+    desc: Deploy nginx project
+    cmds:
+    - task: nginx:install
+
+  so-far:
+    desc: Run all tasks
+    cmds:
+    - task: k3d-intro
+    - task: start-argocd
+    - task: start-nginx
+
 
   help:
     desc: Show help
