@@ -1,0 +1,110 @@
+kube-prometheus-stack:
+  prometheusOperator:
+    enabled: true
+    # admissionWebhooks:
+    #   enabled: false
+    tlsProxy:
+      enabled: false
+    testFramework:
+      enabled: false
+  kubeDns:
+    enabled: false
+  coreDns:
+    enabled: true
+  grafana:
+    admin:
+      existingSecret: kube-prometheus-stack-secret
+      userKey: GRAFANA_ADMIN_USER
+      passwordKey: GRAFANA_ADMIN_PASSWORD
+    # existingSecret: infra-global-monitoring
+    # adminPassword: Us3G!tLabAuth
+
+    # allowed_organizations:
+    # team_ids:
+    # role_attribute_path: contains(type, 'user') && 'Admin' || 'Admin'
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+    dashboards:
+      default:
+        mariadb:
+          gnetId: 13106
+          datasource: default
+        blackbox-exporter:
+          gnetId: 14928
+          datasource: default
+          revision: 3
+        nginx:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+          datasource: default
+        nginx-request-handling-performance:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
+          datasource: default
+        argocd:
+          url: https://raw.githubusercontent.com/argoproj/argo-cd/master/examples/dashboard.json
+          datasource: default
+        argocd-notifications:
+          url: https://argocd-notifications.readthedocs.io/en/stable/grafana-dashboard.json
+          datasource: default
+        argocd-image-updater:
+          url: https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/master/config/example-grafana-dashboard.json
+          datasource: default
+        external-secrets:
+          url: https://gist.githubusercontent.com/MPV/fed281a9cd3297fa8b61387b9004af16/raw/4d88828d6f4d12a405f6ebf5bccedb179f2d9f93/grafana-dashboard-kubernetes-external-secrets.json
+          datasource: default
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+    additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.loki.svc.cluster.local:3100
+      isDefault: false
+      jsonData:
+        maxLines: 5000
+    ingress:
+      enabled: true
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: grafana.k8s.localhost
+        kubernetes.io/ingress.class: nginx
+      hosts:
+      - grafana.k8s.localhost
+      paths:
+      - /
+      tls:
+       - secretName: tls-secret
+  prometheus: # should be internal / add security layer
+    ingress:
+      enabled: true
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: prometheus.k8s.localhost
+        kubernetes.io/ingress.class: nginx
+      hosts:
+      - prometheus.k8s.localhost
+      paths:
+      - /
+      tls:
+       - secretName: tls-secret
+      
+  alertmanager: # should be internal / add security layer
+    ingress:
+      enabled: true
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: alertmanager.k8s.localhost
+        kubernetes.io/ingress.class: nginx
+      hosts:
+      - alertmanager.k8s.localhost
+      paths:
+      - /
+      tls:
+       - secretName: tls-secret

@@ -1,0 +1,11 @@
+fluent-bit:
+  enabled: true
+promtail:
+  enabled: true
+loki:
+  persistence:
+    enabled: false
+config:
+  table_manager:
+  retention_deletes_enabled: true
+  retention_period: 720h

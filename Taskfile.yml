@@ -14,6 +14,7 @@ includes:
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
   config-managment: ./posts/config/tasks.yaml
+  monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
 
 silent: true
 
@@ -59,9 +60,10 @@ tasks:
     - task: k3d-intro
     - task: start-argocd
     - task: start-nginx
+    - task: monitoring-n-logging:all
 
   config-managment:
-    desc: Run all tasks
+    desc: Run all config-managment tasks
     cmds:
     - task: config-managment:install
     
