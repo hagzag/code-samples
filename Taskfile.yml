@@ -4,12 +4,26 @@ dotenv:
 - .env
 # - .env
 
-tasks:
-  build:
-    desc: Build the project
-    cmds:
-    - go build -o bin/app main.go
+includes:
+  # k3d: ./config/tasks/k3d.yaml
+  k3d: ./posts/k3d-intro/k3d-intro.yaml
+  
 
+silent: true
+
+tasks:
+
+  start-k3d:
+    desc: Start the k3d cluster
+    cmds:
+    - task: k3d:cluster-create
+
+  start-secure:
+    desc: Start the k3d cluster
+    cmds:
+    - task: start-k3d
+    - task: k3d:dns
+    - task: k3d:certs
   pkg-part-3:
     desc: Build the project
     dir: posts/PGK-part-3
