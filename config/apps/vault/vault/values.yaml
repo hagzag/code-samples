@@ -1,0 +1,22 @@
+vault:
+  server:
+    postStart: ['sh', '-c', 'vault kv get secret/foo || vault kv put secret/foo hello=world']
+    dev: 
+      enabled: true
+    ingress:
+      enabled: true
+
+      # Optionally use ingressClassName instead of deprecated annotation.
+      # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
+      ingressClassName: nginx
+
+      # As of Kubernetes 1.19, all Ingress Paths must have a pathType configured. The default value below should be sufficient in most cases.
+      # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types for other possible values.
+      pathType: Prefix
+      hosts:
+        - host: vault.k8s.localhost
+          paths: []
+      tls:
+      - secretName: tls-secret
+        hosts:
+          - vault.k8s.localhost

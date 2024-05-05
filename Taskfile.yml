@@ -15,6 +15,7 @@ includes:
   tools: ./config/tasks/tools.yaml
   config-managment: ./posts/config/tasks.yaml
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
+  vault: ./posts/vault-eso/tasks.yaml
 
 silent: true
 

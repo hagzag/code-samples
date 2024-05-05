@@ -1,0 +1,8 @@
+vaultToken:
+  namespace: default
+  name: vault-token
+  value: root
+
+secretPath: secret # some KV2 root
+
+createExternalSecret: true
