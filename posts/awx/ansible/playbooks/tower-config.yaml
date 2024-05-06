@@ -1,0 +1,29 @@
+- name: Configure AWX
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - awx.awx
+
+  tasks:
+    - name: Create a new project in AWX
+      awx.awx.tower_project:
+        name: "Example Project"
+        organization: "Default"
+        scm_type: "git"
+        scm_url: "https://github.com/your/repository.git"
+        scm_update_on_launch: true
+        tower_host: "http://your-awx-server.com"
+        AWX_OAUTH_TOKEN: "{{ lookup('env', 'TOWER_OAUTH_TOKEN') }}"
+        validate_certs: false
+
+    # - name: Create a job template
+    #   awx.awx.tower_job_template:
+    #     name: "Example Job Template"
+    #     project: "Example Project"
+    #     playbook: "playbook.yml"
+    #     inventory: "Demo Inventory"
+    #     credentials:
+    #       - "Demo Credential"
+    #     tower_host: "http://your-awx-server.com"
+    #     AWX_OAUTH_TOKEN: "{{ lookup('env', 'TOWER_OAUTH_TOKEN') }}"
+    #     validate_certs: false

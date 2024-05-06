@@ -3,5 +3,5 @@
 .config/tls/base/tls-secret.yaml
 *.tgz
 storage/
-.config/.dockerconfigjson
+.config/.dockerconfig.json
 .config/docker-config/.dockerconfig.json
