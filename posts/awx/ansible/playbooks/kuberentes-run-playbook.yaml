@@ -1,0 +1,20 @@
+- name: Execute a command in the AWX pod
+  hosts: localhost
+  gather_facts: yes
+  collections:
+    - kubernetes.core
+
+  tasks:
+    - name: Get AWX pod details
+      k8s_info:
+        kind: Pod
+        namespace: awx
+        label_selectors:
+          - "app.kubernetes.io/part-of=awx"  # Adjust this based on how AWX is labeled in your setup
+      register: awx_pod
+
+    - name: Execute command in the AWX pod
+      kubernetes.core.k8s_exec:
+        namespace: awx
+        pod: "{{ awx_pod.resources[0].metadata.name }}"
+        command: ls  # Replace with the command you need to execute

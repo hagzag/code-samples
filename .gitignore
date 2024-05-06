@@ -2,3 +2,4 @@
 *.pem
 .config/tls/base/tls-secret.yaml
 *.tgz
+storage/

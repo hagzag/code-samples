@@ -1,0 +1,92 @@
+version: '3'
+
+silent: true
+
+tasks:
+
+  get-awx-admin-password:
+    cmds:
+      - kubectl get secret awx-admin-password -o json | jq '.data | map_values(@base64d)'
+  
+  run-ansible-k8s-exmaple:
+    dir: "{{.ROOT_DIR}}/posts/awx"
+    desc: Run the ansible k8s example
+    cmds:
+    - kubectl config set-context --current --namespace={{.AWX_NAMESPACE}} --cluster=k3d-{{.CLUSTER_NAME}}
+    - pwd
+    - ansible-playbook ./ansible/playbooks/k8s-playbook.yaml
+ 
+  secret:
+    requires:
+      vars: [ AWX_ADMIN_PASSWORD, AWX_DATABASE_PASSWORD ]
+    # vars:
+    #     sh: git config --get remote.origin.url
+    cmds:
+    - kubectl config set-context --current --namespace={{.AWX_NAMESPACE}} --cluster=k3d-{{.CLUSTER_NAME}}
+    - kubectl get ns {{.AWX_NAMESPACE}} 2>/dev/null || kubectl create ns {{.AWX_NAMESPACE}}
+    - |
+      kubectl apply -f - << EOF
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        namespace: '{{.AWX_NAMESPACE}}'
+        annotations:
+        name: awx-admin-password
+      stringData:
+        password: '{{.AWX_ADMIN_PASSWORD}}'
+      type: Opaque
+      EOF
+    - |
+      kubectl apply -f - << EOF
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: awx-db-secret
+        namespace: '{{.AWX_NAMESPACE}}'
+      stringData:
+        host: '{{.AWX_DATABASE_HOST | default "awx-postgres-15"}}'
+        database: '{{.AWX_DATABASE_NAME | default "awx"}}'
+        username: '{{.AWX_DATABASE_USERNAME | default "awx"}}'
+        password: '{{.AWX_DATABASE_PASSWORD}}'
+        port: '{{.AWX_DATABASE_PORT | default "5432"}}'
+        type: '{{.AWX_DATABASE_TYPE | default "managed"}}'
+      EOF
+    - |
+      kubectl apply -f - << EOF
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: awx-admin-password
+        namespace: '{{.AWX_NAMESPACE}}'
+      stringData:
+        password: '{{.AWX_ADMIN_PASSWORD}}'
+      EOF
+
+  install:
+    dir: config/apps/awx
+    cmds:
+    - kubectl apply -k . # apply the kustomization
+    - sleep 10 # wait for the resources to be created need crds
+    - kubectl apply -k . # apply the kustomization again with awx crd
+
+  uninstall:
+    dir: config/apps/awx
+    cmds:
+    - kubeclt delete awx --all
+    - kubectl delete -k .
+
+  create-argo-apps:
+    cmds:
+      - kubectl apply -f ./config/apps/awx.yaml
+
+  cli-login:
+    interactive: true
+    requires:
+      vars: [ TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD ]
+    cmds:
+      - awx --version &>/dev/null || pip install awxkit
+      # - awx login | jq .token
+      - |
+        # echo $TOWER_OAUTH_TOKEN
+        export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
+        awx jobs list --conf.token $TOWER_OAUTH_TOKEN
