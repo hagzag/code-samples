@@ -4,6 +4,41 @@ silent: true
 
 tasks:
 
+
+  dockercondig-secret-clenup:
+    silent: true
+    dir: .config/docker-config
+    cmds:
+    - kubectl delete secret regcred
+
+  dockercondig-secret:
+    silent: true
+    dir: .config/docker-config
+    requires:
+      vars: [ DOCKER_USERNAME, DOCKER_PASSWORD, DOCKER_EMAIL ]
+    vars:
+      DOCKER_AUTH:
+        sh: echo -n {{.DOCKER_USERNAME}}:{{.DOCKER_PASSWORD}} | base64
+    desc: Create a dockerconfig secret
+    cmds:
+    - |
+      cat <<EOF>.dockerconfig.json
+      {
+        "auths": {
+          "{{.DOCKER_REGISTRY}}": {
+            "username": "{{.DOCKER_USERNAME}}",
+            "password": "{{.DOCKER_PASSWORD}}",
+            "email": "{{.DOCKER_EMAIL}}",
+            "auth": "{{.DOCKER_AUTH}}"
+          }
+        }
+      }
+      EOF
+    - |
+      kubectl create secret docker-registry \
+      regcred --docker-server=docker.io --docker-username=$DOCKER_USERNAME \
+      --docker-password=$DOCKER_PASSWORD --docker-email=$DOCKER_EMAIL
+
   install:
     desc: Installs reloader + scheduler resources manually on the local cluster
     dir: config/apps/

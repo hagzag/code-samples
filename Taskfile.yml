@@ -5,7 +5,6 @@ dotenv:
 # - .env
 
 includes:
-  # k3d: ./config/tasks/k3d.yaml
   k3d: ./posts/k3d-intro/k3d-intro.yaml
   external-dns: ./posts/PGK-part-3/tasks.yaml
   coredns: ./posts/coredns/tasks.yaml
@@ -16,6 +15,7 @@ includes:
   config-managment: ./posts/config/tasks.yaml
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
+  awx: ./posts/awx/tasks.yaml
 
 silent: true
 
