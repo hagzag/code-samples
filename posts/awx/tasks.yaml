@@ -85,8 +85,20 @@ tasks:
       vars: [ TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD ]
     cmds:
       - awx --version &>/dev/null || pip install awxkit
+      # - awx login 
       # - awx login | jq .token
       - |
         # echo $TOWER_OAUTH_TOKEN
         export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
         awx jobs list --conf.token $TOWER_OAUTH_TOKEN
+
+  run-awx-playbook:
+    requires:
+      vars: [TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD  ]
+    dir: '{{.ROOT_DIR}}/posts/awx/ansible'
+    cmds:
+    - pwd
+    - echo $TOWER_HOST
+    - echo $TOWER_USERNAME
+    - echo $TOWER_PASSWORD
+    - ansible-playbook ./playbooks/awx-playbook.yaml
