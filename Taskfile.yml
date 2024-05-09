@@ -23,7 +23,7 @@ includes:
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
   awx: ./posts/awx/tasks.yaml
-
+  cicd-toolz: ./posts/cicd-toolz/tasks.yaml
 silent: true
 
 tasks:
