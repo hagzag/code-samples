@@ -24,7 +24,8 @@ includes:
   vault: ./posts/vault-eso/tasks.yaml
   awx: ./posts/awx/tasks.yaml
   cicd-toolz: ./posts/cicd-toolz/tasks.yaml
-silent: true
+  common-helm: ./posts/common-helm/tasks.yaml
+  chartmeusem: ./posts/chartmeusem/tasks.yaml
 
 tasks:
 
@@ -50,31 +51,39 @@ tasks:
     cmds:
     - task: coredns:dns-test
 
-  start-argocd:
+  argocd:
     desc: Deploy argocd project
     cmds:
+    - task: argocd:install
     - task: argocd:secret
     - task: argocd:repo
-    - task: argocd:install
 
-  start-nginx:
+  nginx:
     desc: Deploy nginx project
     cmds:
     - task: nginx:install
-
-  so-far:
-    desc: Run all tasks
-    cmds:
-    - task: k3d-intro
-    - task: start-argocd
-    - task: start-nginx
-    - task: monitoring-n-logging:all
 
   config-managment:
     desc: Run all config-managment tasks
     cmds:
     - task: config-managment:install
-    
+  
+  so-far:
+    desc: Run core tasks
+    cmds:
+    - task: k3d-intro
+    - kubectl apply -k .config/tls
+    - task: argocd
+    - task: config-managment
+    - task: nginx
+    - task: chartmeusem:install-argo-app
+    # - task: monitoring-n-logging:all
+
+  run-tests:
+    desc: Run tests
+    cmds:
+      - task: test:helm-wrapper
+
   help:
     desc: Show help
     cmds:

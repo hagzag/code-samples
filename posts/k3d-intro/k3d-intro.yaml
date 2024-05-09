@@ -62,6 +62,7 @@ tasks:
         127.0.0.1 app.k8s.localhost
         127.0.0.1 whoami.k8s.localhost
         127.0.0.1 example.k8s.localhost
+        127.0.0.1 chartmuseum.k8s.localhost
         EOF
       - grep -qF "127.0.0.1 {{.CLUSTER_NAME}}.k8s.localhost" ./.config/.etchosts || echo "127.0.0.1 {{.CLUSTER_NAME}}.k8s.localhost" | sudo tee -a ./.config/.etchosts
     ignore_error: true
