@@ -1,0 +1,107 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: odigos-autoscaler
+rules:
+  - apiGroups:
+      - odigos.io
+    resources:
+      - instrumentedapplications
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - odigos.io
+    resources:
+      - instrumentedapplications/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - odigos.io
+    resources:
+      - instrumentedapplications/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - odigos.io
+    resources:
+      - collectorsgroups
+      - destinations
+      - processors
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - odigos.io
+    resources:
+      - collectorsgroups/finalizers
+      - destinations/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - odigos.io
+    resources:
+      - collectorsgroups/status
+      - destinations/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - actions.odigos.io
+    resources:
+      - addclusterinfos
+      - deleteattributes
+      - renameattributes
+    verbs:
+      - watch
+      - get
+      - list
+  - apiGroups:
+      - actions.odigos.io
+    resources:
+      - addclusterinfos/status
+      - deleteattributes/status
+      - renameattributes/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - odigos.io
+    resources:
+      - odigosconfigurations
+    verbs:
+      - get
+      - list
+      - watch

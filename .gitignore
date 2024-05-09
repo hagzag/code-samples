@@ -6,3 +6,4 @@ storage/
 .config/.dockerconfig.json
 .config/docker-config/.dockerconfig.json
 posts/awx/ansible/ansible.log
+.DS_Store

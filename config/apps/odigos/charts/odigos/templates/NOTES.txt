@@ -1,0 +1,6 @@
+Odigos installed successfully. For getting started go to the UI by running:
+
+brew install odigos-io/homebrew-odigos-cli/odigos
+odigos ui
+
+Then, go to: http://localhost:3000

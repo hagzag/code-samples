@@ -1,0 +1,20 @@
+version: '3'
+
+silent: true
+
+tasks:
+  
+  install:
+    desc: Installs odigos resources manually on the local cluster
+    dir: config/apps/odigos
+    cmds:
+    # - helm repo add odigos https://odigos-io.github.io/odigos-charts/
+    # - helm search repo odigos
+    - helm dep update --skip-refresh
+    - helm upgrade --install odigos --namespace odigos-system --create-namespace  .
+    - kubectl label namespace odigos-system odigos.io/system-object="true"
+
+  rm:
+    dir: config/apps/odigos
+    cmds:
+    - helm uninstall -n odigos-system odigos
