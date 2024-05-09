@@ -1,0 +1,8 @@
+{
+    "yaml.schemas": {
+        "https://taskfile.dev/schema.json": [
+            "file:///Users/hagzag/Projects/code-samples/config/tasks/*.yaml",
+            "file:///Users/hagzag/Projects/code-samples/posts/**/tasks.yaml"
+        ]
+    }
+}
