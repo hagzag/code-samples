@@ -1,10 +1,17 @@
 version: '3'
 
+# silent: true
+
 dotenv:
 - .env
-# - .env
 
 includes:
+  # utils
+  helm: ./config/tasks/templates-helm.yaml
+  templates: ./config/tasks/templates.yaml
+  # tests
+  test: ./config/tasks/test.yaml
+  # posts
   k3d: ./posts/k3d-intro/k3d-intro.yaml
   external-dns: ./posts/PGK-part-3/tasks.yaml
   coredns: ./posts/coredns/tasks.yaml

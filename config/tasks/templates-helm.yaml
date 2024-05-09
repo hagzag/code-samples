@@ -1,0 +1,39 @@
+version: '3'
+
+# silent: true
+
+tasks:
+  
+  # helm-create-wrapper-chart:
+  #   # internal: true
+  #   cmds:
+  #     - task: create-wrapper-chart
+  #       vars:
+  #         APP_WRAPPER_NAME: 'my-chart-wrapper-test'
+  #         APP_NAME: 'my-chart-test'
+  #         APP_REPO: 'https://localhost:8080/chart-repo/my-chart-test'
+  #         APP_VERSION: '0.2.0-test'
+
+  create-wrapper-chart:
+    requires:
+      vars:
+      - APP_WRAPPER_NAME
+      - APP_NAME
+      - APP_REPO
+      - APP_VERSION
+    dir: '{{.ROOT_DIR}}/config/apps/'
+    cmds:
+      - echo "APP_WRAPPER_NAME '{{.APP_WRAPPER_NAME}}'"
+      - mkdir -p '{{.APP_WRAPPER_NAME}}'
+      - |
+        cat<<EOF > '{{.APP_WRAPPER_NAME}}/Chart.yaml'
+        apiVersion: v2
+        name: '{{.APP_WRAPPER_NAME}}'
+        description: A Helm chart for wrapping {{.APP_NAME}}
+        version: 0.1.0
+        appVersion: 0.1.0
+        dependencies:
+          - name: '{{.APP_NAME}}'
+            version: '{{.APP_VERSION}}'
+            repository: "{{.APP_REPO}}"
+        EOF

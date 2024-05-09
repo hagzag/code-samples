@@ -29,6 +29,62 @@ tasks:
     - task: zalando
     - task: example
 
+  chartmeusem:
+    cmds:
+    - |
+      kubectl apply -f - << EOF
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: chartmuseum
+        namespace: argocd
+      spec:
+        project: default
+        source:
+          repoURL: 'https://chartmuseum.github.io/charts'
+          targetRevision: '3.10.2'
+          chart: chartmuseum
+          helm:
+            values: |
+              ingress:
+                enabled: true
+                ingressClassName: nginx
+                hosts:
+                  - name: chartmuseum.k8s.localhost
+                    pathType: ImplementationSpecific
+                    path: /
+                    tls: true
+                    tlsSecret: tls-secret
+              env:
+                open:
+                  DISABLE_API: false
+                  STORAGE: local
+                  STORAGE_LOCAL_ROOTDIR: /chartstorage
+        destination:
+          server: 'https://kubernetes.default.svc'
+          namespace: chartmuseum
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+            allowEmpty: true
+          syncOptions:
+          - Validate=true
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+          - ApplyOutOfSyncOnly=false
+          - Prune=true
+          retry:
+            limit: -1
+            backoff:
+              duration: 20s
+              factor: 2
+              maxDuration: 15m
+
+      EOF
+    ignore_error: true
+
   argocd:
     cmds:
     - |
@@ -40,7 +96,7 @@ tasks:
         finalizers:
           - resources-finalizer.argocd.argoproj.io
       spec:
-        project: core
+        project: default
         source:
           repoURL: '$GIT_URI'
           path: apps/argocd
@@ -96,46 +152,6 @@ tasks:
           syncOptions:
           - Validate=true
           - CreateNamespace=false
-          - PrunePropagationPolicy=foreground
-          - PruneLast=true
-          - ApplyOutOfSyncOnly=false
-          - Prune=true
-          retry:
-            limit: -1
-            backoff:
-              duration: 20s
-              factor: 2
-              maxDuration: 15m
-      EOF
-    ignore_error: true
-
-  zalando:
-    cmds:
-    - |
-      kubectl apply -f - << EOF
-      apiVersion: argoproj.io/v1alpha1
-      kind: Application
-      metadata:
-        name: postgres
-        finalizers:
-          - resources-finalizer.argocd.argoproj.io
-      spec:
-        project: cluster
-        source:
-          repoURL: '$GIT_URI'
-          path: apps/databases/zalando
-          targetRevision: main
-        destination:
-          namespace: databases
-          name: in-cluster
-        syncPolicy:
-          automated:
-            prune: true
-            selfHeal: true
-            allowEmpty: true
-          syncOptions:
-          - Validate=false
-          - CreateNamespace=true
           - PrunePropagationPolicy=foreground
           - PruneLast=true
           - ApplyOutOfSyncOnly=false
