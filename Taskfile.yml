@@ -68,7 +68,7 @@ tasks:
   nginx:
     desc: Deploy nginx project
     cmds:
-    - task: nginx:install
+    - task: nginx:install-argocd-app
 
   config-managment:
     desc: Run all config-managment tasks

@@ -2,21 +2,43 @@ version: '3'
 
 silent: true
 
+vars:
+  CONTROLLER_NAMESPACE: 'ingress-nginx'
+
 tasks:
 
-  install:
-    desc: Installs nginx resources manually on the local cluster
+  install-argocd-app:
+    desc: Installs nginx as argocCD application
     dir: config/apps/
-    preconditions:
-    - sh: 'which kustomize'
-      msg: 'kustomize {{.PATH_ERROR}}'
-    - sh: 'which kubectl'
-      msg: 'kubectl {{.PATH_ERROR}}'
     cmds:
+    - task: set-argocd-context
     - kubectl apply -f nginx.yaml
-
-  rm:
+  
+  delete-argocd-app:
     dir: config/apps/
     cmds:
-    - delete -f nginx.yaml
+    - task: set-argocd-context
+    - kubectl delete -f nginx.yaml
     ignore_error: true
+  
+  set-argocd-context:
+    internal: true
+    cmds:
+    - kubectl config set-context --current --namespace=argocd --cluster=k3d-{{.CLUSTER_NAME}}
+  
+  remote-helm-install:
+    cmds:
+    - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    # - helm repo update 
+    # - echo {{.CONTROLLER_NAMESPACE}}
+    - helm upgrade --install ingress-nginx --namespace {{.CONTROLLER_NAMESPACE}} --create-namespace --wait --timeout 5m ingress-nginx/ingress-nginx 
+  
+  local-helm-install:
+    dir: config/apps/ingress-nginx/
+    cmds:
+    - helm dep update --skip-refresh
+    - helm upgrade --install ingress-nginx . --namespace {{.CONTROLLER_NAMESPACE}} --wait --timeout 5m
+  
+  helm-uninstall:
+    cmds:
+    - helm uninstall ingress-nginx --namespace {{.CONTROLLER_NAMESPACE}} 
