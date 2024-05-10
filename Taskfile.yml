@@ -19,13 +19,21 @@ includes:
   nginx: ./posts/nginx/tasks.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
+  # common tools foor configuration managment   
   config-managment: ./posts/config/tasks.yaml
-  monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
+
   awx: ./posts/awx/tasks.yaml
+  
+  # applications / packages
   cicd-toolz: ./posts/cicd-toolz/tasks.yaml
   common-helm: ./posts/common-helm/tasks.yaml
+  
+  # helm chart registry
   chartmeusem: ./posts/chartmeusem/tasks.yaml
+  
+  # observability
+  monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
 
 tasks:
 

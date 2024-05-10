@@ -7,7 +7,7 @@ tasks:
     desc: Starts a local k3d cluster.
     preconditions:
     - sh: "which k3d"
-      msg: "k3d missing. Please install it by running 'task install-tools'"
+      msg: "k3d missing. Please install it by running 'task tools:install'"
     summary: |
       I was inspired by gitops-local repository which I can across which became my toolkit for a while
       I also borrowed a few concetps that I picked up at various places from external-secrets to ingress, reloader and reflector argocd and many others.
