@@ -27,7 +27,6 @@ includes:
   
   # applications / packages
   cicd-toolz: ./posts/cicd-toolz/tasks.yaml
-  common-helm: ./posts/common-helm/tasks.yaml
   
   # helm chart registry
   chartmeusem: ./posts/chartmeusem/tasks.yaml
