@@ -1,7 +1,7 @@
 version: '3'  
 includes:
   # utils
-  helm: ./templates-helm.yaml
+  helm: ./helm.yaml
 
 tasks:
   

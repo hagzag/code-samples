@@ -1,0 +1,14 @@
+reloader:
+  kubernetes:
+    host: https://kubernetes.default
+  reloader:
+    isArgoRollouts: true
+    isOpenshift: false
+    ignoreSecrets: false
+    ignoreConfigMaps: false
+    reloadOnCreate: true
+    reloadStrategy: default
+    ignoreNamespaces: ""
+    logFormat: ""
+    watchGlobally: true
+    readOnlyRootFileSystem: false

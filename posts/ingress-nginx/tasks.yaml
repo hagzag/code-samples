@@ -2,6 +2,9 @@ version: '3'
 
 silent: true
 
+includes:
+  helm: './../../config/tasks/helm.yaml'
+
 vars:
   CONTROLLER_NAMESPACE: 'ingress-nginx'
 
@@ -12,13 +15,13 @@ tasks:
     dir: config/apps/
     cmds:
     - task: set-argocd-context
-    - kubectl apply -f nginx.yaml
+    - kubectl apply -f ingress-nginx.yaml
   
   delete-argocd-app:
     dir: config/apps/
     cmds:
     - task: set-argocd-context
-    - kubectl delete -f nginx.yaml
+    - kubectl delete -f ingress-nginx.yaml
     ignore_error: true
   
   set-argocd-context:
@@ -42,3 +45,28 @@ tasks:
   helm-uninstall:
     cmds:
     - helm uninstall ingress-nginx --namespace {{.CONTROLLER_NAMESPACE}} 
+
+  local-apply:
+    cmds:
+    - task: helm:install
+      vars:
+        CHART: &nginx_chart ingress-nginx
+        CHART_FOLDER: '{{.ROOT_DIR}}/config/apps/ingress-nginx'
+        VALUES_FILES: '{{.CHART_FOLDER}}/values.yaml'
+        NAMESPACE: *nginx_chart
+
+  local-dryrun:
+    vars: &vars
+      CHART_FOLDER: ./config/apps/ingress-nginx
+      CHART: ingress-nginx
+      VALUES_FILES: values.yaml
+      REPO_URL: https://kubernetes.github.io/ingress-nginx
+    cmds:
+      - task: helm:repo_add
+        vars: *vars
+      - task: helm:dependency_build 
+        vars: *vars
+      - task: helm:template
+        vars: *vars
+      - task: helm:template_apply_dry_run
+        vars: *vars

@@ -1,0 +1,19 @@
+apiVersion: v2
+name: reloader
+description: A Helm chart for reloader
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+type: application
+
+# The chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 1.0.38
+
+# Version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application.
+appVersion: "1.0"
+
+dependencies:
+- name: reloader
+  version: 1.0.38
+  repository: https://stakater.github.io/stakater-charts

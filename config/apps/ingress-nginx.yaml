@@ -12,15 +12,12 @@ spec:
     targetRevision: main
     helm:
       releaseName: nginx
-      parameters:
-      - name: "default-ssl-certificate"
-        value: "kube-system/tls-secret"
-      # values: |
-      #   extraArgs:
-      #     default-ssl-certificate: "kube-system/tls-secret"
+      values: |
+        extraArgs:
+          default-ssl-certificate: "ingress-nginx/tls-secret"
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: kube-system
+    namespace: ingress-nginx
   syncPolicy:
     automated:
       prune: true
@@ -28,7 +25,7 @@ spec:
       allowEmpty: true
     syncOptions:
     - Validate=true
-    - CreateNamespace=false
+    - CreateNamespace=true
     - PrunePropagationPolicy=foreground
     - PruneLast=true
     retry:

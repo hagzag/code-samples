@@ -7,7 +7,7 @@ dotenv:
 
 includes:
   # utils
-  helm: ./config/tasks/templates-helm.yaml
+  helm: ./config/tasks/helm.yaml
   templates: ./config/tasks/templates.yaml
   # tests
   test: ./config/tasks/test.yaml
@@ -16,7 +16,7 @@ includes:
   external-dns: ./posts/PGK-part-3/tasks.yaml
   coredns: ./posts/coredns/tasks.yaml
   argocd: ./posts/argocd/tasks.yaml
-  nginx: ./posts/nginx/tasks.yaml
+  ingress-nginx: ./posts/ingress-nginx/tasks.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
   # common tools foor configuration managment   
@@ -65,10 +65,10 @@ tasks:
     - task: argocd:secret
     - task: argocd:repo
 
-  nginx:
+  ingress-nginx:
     desc: Deploy nginx project
     cmds:
-    - task: nginx:install-argocd-app
+    - task: ingress-nginx:install-argocd-app
 
   config-managment:
     desc: Run all config-managment tasks
