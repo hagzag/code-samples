@@ -1,14 +1,23 @@
 whoami:
   ingress:
-  enabled: true
-  hosts:
-    - paths: 
-        - /
+    enabled: true
+    ingressClassName: nginx
+    pathType: ImplementationSpecific
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - host: &host whoami.k8s.localhost
+        paths:
+          - /
+    tls: 
+      - secretName: tls-secret
+        hosts:
+          - *host
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
