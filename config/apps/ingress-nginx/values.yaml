@@ -1,0 +1,6 @@
+ingress-nginx:
+  extraArgs:
+    default-ssl-certificate: "ingress-nginx/tls-secret"
+  controller:
+    autoscaling:
+      enabled: false

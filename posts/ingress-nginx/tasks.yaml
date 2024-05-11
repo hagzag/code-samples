@@ -46,20 +46,13 @@ tasks:
     cmds:
     - helm uninstall ingress-nginx --namespace {{.CONTROLLER_NAMESPACE}} 
 
-  local-apply:
-    cmds:
-    - task: helm:install
-      vars:
-        CHART: &nginx_chart ingress-nginx
-        CHART_FOLDER: '{{.ROOT_DIR}}/config/apps/ingress-nginx'
-        VALUES_FILES: '{{.CHART_FOLDER}}/values.yaml'
-        NAMESPACE: *nginx_chart
-
+ 
   local-dryrun:
     vars: &vars
-      CHART_FOLDER: ./config/apps/ingress-nginx
-      CHART: ingress-nginx
-      VALUES_FILES: values.yaml
+      CHART: &nginx_chart ingress-nginx
+      CHART_FOLDER: '{{.ROOT_DIR}}/config/apps/ingress-nginx'
+      VALUES_FILES: '{{.ROOT_DIR}}/config/apps/ingress-nginx/values.yaml'
+      NAMESPACE: *nginx_chart
       REPO_URL: https://kubernetes.github.io/ingress-nginx
     cmds:
       - task: helm:repo_add
@@ -70,3 +63,8 @@ tasks:
         vars: *vars
       - task: helm:template_apply_dry_run
         vars: *vars
+
+  local-apply:
+    cmds:
+    - task: helm:install
+      vars: *vars

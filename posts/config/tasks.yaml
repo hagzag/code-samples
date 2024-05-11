@@ -67,7 +67,7 @@ tasks:
       VERSION:
        sh: cat ./config/apps/reloader/Chart.yaml | yq .dependencies.[0].version
       CHART_FOLDER: '{{.ROOT_DIR}}/config/apps/reloader'
-      VALUES_FILES: '{{.CHART_FOLDER}}values.yaml'
+      VALUES_FILES: '{{.ROOT_DIR}}/config/apps/reloader/values.yaml'
     cmds:
       - task: helm:repo_add
         vars: *reloader-vars
@@ -93,7 +93,7 @@ tasks:
       VERSION:
        sh: cat ./config/apps/reflector/Chart.yaml | yq .dependencies.[0].version
       CHART_FOLDER: '{{.ROOT_DIR}}/config/apps/reflector'
-      VALUES_FILES: '{{.CHART_FOLDER}}values.yaml'
+      VALUES_FILES: '{{.ROOT_DIR}}/config/apps/reflector/values.yaml'
     cmds:
       - task: helm:repo_add
         vars: *reflector-vars
@@ -119,7 +119,7 @@ tasks:
       VERSION:
        sh: cat ./config/apps/descheduler/Chart.yaml | yq .dependencies.[0].version
       CHART_FOLDER: "{{.ROOT_DIR}}/config/apps/descheduler"
-      VALUES_FILES: '{{.CHART_FOLDER}}values.yaml'
+      VALUES_FILES: '{{.ROOT_DIR}}/config/apps/descheduler/values.yaml'
     cmds:
       - task: helm:repo_add
         vars: *descheduler-vars
@@ -134,5 +134,31 @@ tasks:
     cmds:
       - task: helm:install
         vars: *descheduler-vars
+
+  
+  whoami-local-dryrun:
+    vars: &whoami-vars
+      CHART: &whoami-name whoami
+      NAMESPACE: *whoami-name
+      REPO_URL:
+       sh: cat ./config/apps/whoami/Chart.yaml| yq .dependencies.[0].repository
+      VERSION:
+       sh: cat ./config/apps/whoami/Chart.yaml | yq .dependencies.[0].version
+      CHART_FOLDER: "{{.ROOT_DIR}}/config/apps/whoami"
+      VALUES_FILES: '{{.ROOT_DIR}}/config/apps/whoami/values.yaml'
+    cmds:
+      - task: helm:repo_add
+        vars: *whoami-vars
+      - task: helm:dependency_build 
+        vars: *whoami-vars
+      - task: helm:template
+        vars: *whoami-vars
+      - task: helm:template_apply_dry_run
+        vars: *whoami-vars
+
+  whoami-local-apply:
+    cmds:
+      - task: helm:install
+        vars: *whoami-vars
 
   
