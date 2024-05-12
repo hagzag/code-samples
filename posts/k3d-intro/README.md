@@ -9,7 +9,7 @@ Before getting started, ensure you have the following prerequisites:
 - **k3d**: Make sure you have k3d installed on your system. If not, you can install it by running:
 
   ```bash
-  task install-tools
+  task tolls:install
   ```
 
 - **Linux / macOS**: This guide assumes you are using either Linux or macOS. Instructions may vary slightly for other operating systems.
