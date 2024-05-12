@@ -80,6 +80,8 @@ tasks:
 
   reloader-local-apply:
     cmds:
+      - task: helm:dependency_build 
+        vars: *reloader-vars
       - task: helm:install
         vars: *reloader-vars
   
@@ -106,6 +108,8 @@ tasks:
 
   reflector-local-apply:
     cmds:
+      - task: helm:dependency_build 
+        vars: *reflector-vars
       - task: helm:install
         vars: *reflector-vars
 
@@ -132,6 +136,8 @@ tasks:
 
   descheduler-local-apply:
     cmds:
+      - task: helm:dependency_build 
+        vars: *descheduler-vars
       - task: helm:install
         vars: *descheduler-vars
 
@@ -158,6 +164,8 @@ tasks:
 
   whoami-local-apply:
     cmds:
+      - task: helm:dependency_build 
+        vars: *whoami-vars
       - task: helm:install
         vars: *whoami-vars
 
