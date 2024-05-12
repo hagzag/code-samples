@@ -66,5 +66,7 @@ tasks:
 
   local-apply:
     cmds:
-    - task: helm:install
-      vars: *vars
+      - task: helm:dependency_build 
+        vars: *vars
+      - task: helm:install
+        vars: *vars
