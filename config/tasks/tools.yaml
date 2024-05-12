@@ -41,8 +41,43 @@ tasks:
       sleep 0.1 && \
       {{.RESET}}
 
+  autocomplete-taskfile:
+    cmds: #see https://github.com/go-task/task/pull/906/files#diff-19fd876fb56da88a1becb80817b52db1a40e8491641d547913b93bb7ecda3d22
+    - |
+      {{if or (eq OS "linux") (eq OS "darwin")}}
+        set -e;
+        if [ "${SHELL##*/}" = 'zsh' ] && [ -d "$ZSH" ]; then
+          echo "autocomplete-taskfile: oh-my-zsh detected"
+          if [ -f $ZSH/completions/_task ]; then
+            echo "autocomplete-taskfile: [-] .oh-my-zsh installation includes taskfile autocompletion :)"
+          else
+            echo "autocomplete-taskfile: adding taskfile autocompletion for .oh-my-zsh installation..."
+            mkdir -p $ZSH/completions;
+            curl https://raw.githubusercontent.com/go-task/task/main/completion/zsh/_task > $ZSH/completions/_task
+            echo "autocomplete-taskfile: [v] added: $ZSH/completions/_task"
+            UPDATED=true
+          fi
+          if grep 'autoload -U compinit && compinit -i' ~/.zshrc > /dev/null; then
+            echo "autocomplete-taskfile: [-] ~/.zshrc seems to include autoload directive"
+          else 
+            echo 'autoload -U compinit && compinit -i' >> ~/.zshrc
+            echo "autocomplete-taskfile: [v] added autoload directive to ~/.zshrc"
+            UPDATED=true
+          fi
+          if [ "true" = "$UPDATED" ]; then source ~/.zshrc; fi
+        # elif [ "${SHELL##*/}" = 'zsh' ] ... i.e - zsh w/o oh-my-zsh
+        # elif [ "${SHELL##*/}" = 'bash' ] ...
+        # elif [ "${SHELL##*/}" = 'fish' ] ...
+        else
+          echo "autocomplete-taskfile: [ ] did not recognize shell - did not install anything"
+        fi
+      {{else}}
+        echo "autocomplete-taskfile: No handling of autocomplete for your OS - not doing anything"
+      {{end}}
+
   install:
     cmds:
+    - task: autocomplete-taskfile
     - task: mkcert
     - task: kustomize
     - task: k3d
