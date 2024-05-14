@@ -22,6 +22,7 @@ includes:
   # common tools foor configuration managment   
   config-managment: ./posts/config/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
+  sealed-secrets: ./posts/sealed-secrets/Taskfile.yaml
 
   awx: ./posts/awx/tasks.yaml
   
@@ -36,14 +37,10 @@ includes:
 
 tasks:
 
-  k3d-intro-insecure:
+  cluster-create:
     desc: Start the k3d cluster
     cmds:
-    - task: k3d:cluster-create
-
-  k3d-intro:
-    desc: Start the k3d cluster
-    cmds:
+    - task: k3d:cluster-template
     - task: k3d:cluster-create
     - task: k3d:dns
     - task: k3d:certs
@@ -75,10 +72,21 @@ tasks:
     cmds:
     - task: config-managment:install
   
+  sealed-secrets:
+    desc: Run all sealed-secrets tasks
+    cmds:
+    - task: cluster-create
+    - task: sealed-secrets:install-kubeseal
+    - task: sealed-secrets:create-private-key
+    - kubectl apply -k .config/sealed-secrets
+    - task: sealed-secrets:local-apply
+    # - task: sealed-secrets:install-kubeseal
+    # - task: sealed-secrets:create-private-key
+
   so-far:
     desc: Run core tasks
     cmds:
-    - task: k3d-intro
+    - task: cluster-create
     - kubectl apply -k .config/tls
     - task: argocd
     - task: config-managment
@@ -91,7 +99,13 @@ tasks:
     cmds:
       - task: test:helm-wrapper
 
+  destroy-env:
+    desc: Destroy the k3d cluster
+    cmds:
+    - k3d cluster delete $CLUSTER_NAME
+
   help:
     desc: Show help
     cmds:
     - task --list
+
