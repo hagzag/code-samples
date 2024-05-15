@@ -61,6 +61,7 @@ tasks:
     - kubectl create secret generic db-password -n default --from-file=password.txt --dry-run=client -o yaml | kubeseal --controller-namespace sealed-secrets -oyaml > sealed-secrets.yaml
     - kubectl apply -f sealed-secrets.yaml
     - echo -e "\nThe content of the secret expected to be encrypted and stored in the cluster\n"
-    - kubectl get secret -n default db-password -o json | jq '.data | map_values(@base64d)'
+    - kubectl get sealedsecrets.bitnami.com db-password -n default -o json | jq '.spec.encryptedData | map_values(@base64d)'
+    # - kubectl get secret -n default db-password -o json | jq '.data | map_values(@base64d)'
     # - kubeseal --fetch-cert --controller-namespace sealed-secrets --controller-name sealed-secrets > cert.pem
 
