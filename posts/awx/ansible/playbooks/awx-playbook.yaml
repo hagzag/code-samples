@@ -3,36 +3,132 @@
   gather_facts: false
   collections:
     - awx.awx
+  vars:
+    project_names:
+      - abc
+      - def
+      - ghi
 
   tasks:
-    - name: Create a new organization
-      tower_organization:
-        name: "Demo Org"
-        description: "demo org"
-        state: present
-        # tower_host: "{{ lookup('env', 'TOWER_HOST') }}"
-        # tower_username: "{{ lookup('env', 'TOWER_USERNAME') }}"
-        # tower_password: "{{ lookup('env', 'TOWER_PASSWORD') }}"
-    # - name: Create a new project in AWX
-    #   awx.awx.tower_project:
-    #     name: "Example Project"
-    #     organization: "Default"
-    #     # scm_type: "git"
-    #     # scm_url: "https://github.com/your/repository.git"
-    #     # scm_update_on_launch: true
-    #     tower_host: "{{ lookup('env', 'TOWER_HOST') }}"
-    #     tower_username: "{{ lookup('env', 'TOWER_USERNAME') }}"
-    #     tower_password: "{{ lookup('env', 'TOWER_PASSWORD') }}"
-    #     validate_certs: no
+  # - name: Print SCM_USERNAME
+  #   debug:
+  #     msg: "SCM_USERNAME is {{ lookup('env', 'SCM_USERNAME') }}"
 
-    # - name: Create a job template
-    #   awx.awx.tower_job_template:
-    #     name: "Example Job Template"
-    #     project: "Example Project"
-    #     playbook: "playbook.yml"
-    #     inventory: "Demo Inventory"
-    #     credentials:
-    #       - "Demo Credential"
-    #     tower_host: "http://your-awx-server.com"
-    #     AWX_OAUTH_TOKEN: "{{ lookup('env', 'TOWER_OAUTH_TOKEN') }}"
-    #     validate_certs: false
+  # - name: Print SCM_PASSWORD
+  #   debug:
+  #     msg: "SCM_PASSWORD is {{ lookup('env', 'SCM_PASSWORD') }}"
+
+  - name: Create new organizations 
+    loop: "{{ project_names }}"
+    awx.awx.tower_organization:
+      name: "{{ item }}"
+      description: "{{ item }} org"
+      state: present
+  
+  - name: Create a Team
+    loop: "{{ project_names }}"
+    awx.awx.tower_team:
+      name: "{{ item }} Admins Team"
+      description: "{{ item }} team Admins"
+      organization: "{{ item }}"
+      state: present
+      validate_certs: false
+
+  - name: Create a GitLab HTTPS credential
+    awx.awx.tower_credential:
+      name: "GitLab HTTPS Credential"
+      description: "HTTPS credential for accessing GitLab"
+      organization: "Default"
+      credential_type: "Source Control"
+      inputs:
+        username: "{{ lookup('env', 'SCM_USERNAME') }}"
+        password: "{{ lookup('env', 'SCM_PASSWORD') }}"
+      state: present
+    # delegate_to: localhost
+  
+  - name: Create AWX DEMO Project from Gitlab
+    awx.awx.tower_project:
+      name: "test-playbooks"
+      description: "A demo test-playbooks project forked from Github"
+      organization: "Default"
+      scm_type: "git"
+      scm_url: "https://gitlab.com/qwilt/ops/ansible/poc/test-playbooks.git"
+      scm_credential: "GitLab HTTPS Credential"
+      state: present
+
+  - name: Create AWX Projects
+    loop: "{{ project_names }}"
+    awx.awx.tower_project:
+      name: "{{ item }}-ansible-repository"
+      description: "Automatically created project for {{ item }}"
+      organization: "Default"
+      scm_type: "git"
+      scm_url: "https://gitlab.com/qwilt/ansible/{{ item }}-ansible-repository.git"  # Replace with the actual repository URL
+      scm_credential: "GitLab HTTPS Credential"
+      state: present
+    # delegate_to: localhost
+  
+  - name: Create an Inventory
+    loop: "{{ project_names }}"
+    tower_inventory:
+      name: "{{item}}-localhost-only"
+      description: "{{item}} Inventory"
+      organization: "{{item}}"
+      state: present
+
+  - name: Create a Host
+    loop: "{{ project_names }}"
+    tower_host:
+      name: "localhost"
+      inventory: "{{item}}-localhost-only"
+      state: present
+      variables:
+        project_name: "{{item}}"
+
+  - name: Create a Job Template
+    loop: "{{ project_names }}"
+    tower_job_template:
+      name: "Job Template to Launch {{item}}-debug Playbook"
+      project: "test-playbooks"
+      inventory: "{{item}}-localhost-only"
+      playbook: debug.yml
+      ask_extra_vars: yes
+
+
+  # - name: Create a job template
+  #   awx.awx.job_template:
+  #     name: "Debug Job Template"
+  #     project: "test-playbooks"
+  #     playbook: debug.yml"
+  #     inventory: "New Inventory"
+
+
+  # - name: Create a new project in AWX
+  #   loop:  
+  #   - ocn # ocn department
+  #   - edge # edge department
+  #   - cdn # cdn department
+  #   - it # IT department
+  #   awx.awx.tower_project:
+  #     name: "{{ item }} Project"
+  #     organization: "{{ item }}"
+  #     scm_type: "git"
+  #     scm_url: "https://gitlab.com/qwilt/ansible/{{ item }}-ansible-repository.git"
+  #     scm_update_on_launch: true
+  #     state: present
+
+      # tower_host: "{{ lookup('env', 'TOWER_HOST') }}"
+      # AWX_OAUTH_TOKEN: "{{ lookup('env', 'TOWER_OAUTH_TOKEN') }}"
+      # validate_certs: false
+
+  # - name: Create a job template
+  #   awx.awx.tower_job_template:
+  #     name: "Example Job Template"
+  #     project: "Example Project"
+  #     playbook: "playbook.yml"
+  #     inventory: "Demo Inventory"
+  #     credentials:
+  #       - "Demo Credential"
+  #     tower_host: "http://your-awx-server.com"
+  #     AWX_OAUTH_TOKEN: "{{ lookup('env', 'AWX_OAUTH_TOKEN') }}"
+  #     validate_certs: false

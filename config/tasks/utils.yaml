@@ -92,3 +92,21 @@ tasks:
         }
       }
       EOF
+  
+  images-list:
+    cmds:
+    - kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq > images.txt
+    - |
+      IMAGES=$(cat images.txt)
+      echo $IMAGES
+      for image in $IMAGES; do
+        echo "Pulling image: $image"
+        docker pull $image
+
+        new_image="registry.localhost:5002/$(basename $image)"
+        echo "Tagging image: $image as $new_image"
+        docker tag $image $new_image
+
+        echo "Pushing image: $new_image"
+        docker push $new_image
+      done

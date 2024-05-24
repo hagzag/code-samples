@@ -1,3 +1,7 @@
+[submodule "config/apps/common-lib"]
+	path = config/apps/common-lib
+	url = https://gitlab.tikalk.dev/tikalk/engineering/tools/common-helm-lib.git
+	branch = main
 [submodule "config/apps/cicd-toolz"]
 	path = config/apps/cicd-toolz
 	url = https://github.com/hagzag/cicd-toolz.git

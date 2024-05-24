@@ -46,6 +46,7 @@ hostAliases:
   - app.k8s.localhost
   - example.k8s.localhost
   - whoami.k8s.localhost
+  - awx.k8s.localhost
   - playground.k8s.localhost
 options:
   k3d:
@@ -59,7 +60,7 @@ options:
     - arg: --disable=traefik
       nodeFilters:
       - server:*
-    - arg: --tls-san=localhost,127.0.0.1,registry.localhost,k8s.localhost,cluster.localhost,k8s.localhost,demo.k8s.localhost,app.k8s.localhost,example.k8s.localhost,whoami.k8s.localhost,playground.k8s.localhost
+    - arg: --tls-san=localhost,127.0.0.1,registry.localhost,k8s.localhost,cluster.localhost,k8s.localhost,demo.k8s.localhost,app.k8s.localhost,example.k8s.localhost,whoami.k8s.localhost,awx.k8s.localhost,playground.k8s.localhost
       nodeFilters:
       - server:*
     - arg: --kube-proxy-arg=metrics-bind-address=0.0.0.0
