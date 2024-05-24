@@ -4,6 +4,13 @@ silent: true
 
 tasks:
 
+  install:
+    dir: config/apps/awx
+    cmds:
+    - kubectl apply -k . || true # apply the kustomization
+    - sleep 10 # wait for the resources to be created need crds
+    - kubectl apply -k . # apply the kustomization again with awx crd
+
   get-awx-admin-password:
     cmds:
       - kubectl get secret awx-admin-password -o json | jq '.data | map_values(@base64d)'
@@ -62,43 +69,57 @@ tasks:
         password: '{{.AWX_ADMIN_PASSWORD}}'
       EOF
 
-  install:
-    dir: config/apps/awx
-    cmds:
-    - kubectl apply -k . # apply the kustomization
-    - sleep 10 # wait for the resources to be created need crds
-    - kubectl apply -k . # apply the kustomization again with awx crd
-
   uninstall:
     dir: config/apps/awx
     cmds:
-    - kubeclt delete awx --all
+    - kubectl delete awx --all -n {{.AWX_NAMESPACE}}
     - kubectl delete -k .
 
   create-argo-apps:
     cmds:
       - kubectl apply -f ./config/apps/awx.yaml
 
-  cli-login:
+  awx-cli-login:
     interactive: true
     requires:
       vars: [ TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD ]
     cmds:
       - awx --version &>/dev/null || pip install awxkit
-      # - awx login 
-      # - awx login | jq .token
       - |
         # echo $TOWER_OAUTH_TOKEN
         export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
-        awx jobs list --conf.token $TOWER_OAUTH_TOKEN
+        awx ping --conf.token $TOWER_OAUTH_TOKEN
 
+  # cli-login:
+  #   interactive: true
+  #   requires:
+  #     vars: [ TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD ]
+  #   cmds:
+  #     - awx -k --version &>/dev/null || pip install awxkit
+  #     - |
+  #       # echo $TOWER_OAUTH_TOKEN
+  #       # export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
+  #       # echo $TOWER_OAUTH_TOKEN
+  #       awx ping 
+  #       # list --conf.token $TOWER_OAUTH_TOKEN
+  #       # awx ping list --conf.token $TOWER_OAUTH_TOKEN
+        
   run-awx-playbook:
-    requires:
-      vars: [TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD  ]
+    # dir: '{{.TASKFILE_DIR}}/ansible'
     dir: '{{.ROOT_DIR}}/posts/awx/ansible'
     cmds:
-    - pwd
-    - echo $TOWER_HOST
-    - echo $TOWER_USERNAME
-    - echo $TOWER_PASSWORD
-    - ansible-playbook ./playbooks/awx-playbook.yaml
+     - |
+        # echo $TOWER_OAUTH_TOKEN
+        export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
+        ansible-playbook ./playbooks/awx-playbook.yaml   
+  # run-awx-playbook:
+  #   requires:
+  #     vars: [TOWER_HOST, TOWER_USERNAME, TOWER_PASSWORD  ]
+  #   dir: '{{.ROOT_DIR}}/posts/awx/ansible'
+  #   cmds:
+  #   - echo $TOWER_HOST
+  #   - echo $TOWER_USERNAME
+  #   - echo $TOWER_PASSWORD
+  #   - |
+  #     export TOWER_OAUTH_TOKEN=$(awx login | jq -r .token)
+  #     ansible-playbook ./playbooks/awx-playbook.yaml

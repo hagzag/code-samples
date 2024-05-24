@@ -9,6 +9,8 @@ includes:
   # utils
   helm: ./config/tasks/helm.yaml
   templates: ./config/tasks/templates.yaml
+  utils: ./config/tasks/utils.yaml
+  bitwarden: ./config/tasks/bitwarden.yaml
   # tests
   test: ./config/tasks/test.yaml
   # posts
@@ -19,13 +21,14 @@ includes:
   ingress-nginx: ./posts/ingress-nginx/tasks.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
+  helm-chart-github-repo: ./posts/helm-chart-github-repo/tasks.yaml
   # common tools foor configuration managment   
   config-managment: ./posts/config/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
   sealed-secrets: ./posts/sealed-secrets/Taskfile.yaml
+  semantic-release: ./posts/semantic-release/Taskfile.yaml
 
   awx: ./posts/awx/tasks.yaml
-  
   # applications / packages
   cicd-toolz: ./posts/cicd-toolz/tasks.yaml
   
@@ -80,8 +83,6 @@ tasks:
     - task: sealed-secrets:create-private-key
     - kubectl apply -k .config/sealed-secrets
     - task: sealed-secrets:local-apply
-    # - task: sealed-secrets:install-kubeseal
-    # - task: sealed-secrets:create-private-key
 
   so-far:
     desc: Run core tasks
@@ -93,6 +94,23 @@ tasks:
     - task: nginx
     - task: chartmeusem:install-argo-app
     # - task: monitoring-n-logging:all
+    # - task: sealed-secrets:create-private-key
+    # - kubectl apply -k .config/sealed-secrets
+    # - task: sealed-secrets:local-apply
+
+  run-awx:
+    vars:
+      ADDITIONAL_HOSTS: "awx.k8s.localhost"
+    desc: Run the awx project
+    cmds:
+    # - task: cluster-create
+    # - kubectl apply -k .config/tls
+    # - task: argocd
+    # - task: config-managment
+    # - task: ingress-nginx
+    # - task: awx:secret
+    # - task: awx:install
+    - task: awx:run-awx-playbook
 
   run-tests:
     desc: Run tests
@@ -109,3 +127,6 @@ tasks:
     cmds:
     - task --list
 
+  aws-login:
+    cmds:
+      - task: aws:default
