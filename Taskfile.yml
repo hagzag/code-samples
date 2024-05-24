@@ -127,6 +127,3 @@ tasks:
     cmds:
     - task --list
 
-  aws-login:
-    cmds:
-      - task: aws:default
