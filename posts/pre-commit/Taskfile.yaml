@@ -102,7 +102,7 @@ tasks:
 
   install:
     desc: "internal | configure | pre-commit to local repo"
-    deps: [pre-commit-get]
+    deps: [get]
     cmds:
     - pre-commit install
 
