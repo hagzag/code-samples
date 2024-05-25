@@ -19,6 +19,7 @@ includes:
   coredns: ./posts/coredns/tasks.yaml
   argocd: ./posts/argocd/tasks.yaml
   ingress-nginx: ./posts/ingress-nginx/tasks.yaml
+  pre-commit: ./posts/pre-commit/Taskfile.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
   helm-chart-github-repo: ./posts/helm-chart-github-repo/tasks.yaml
@@ -126,4 +127,3 @@ tasks:
     desc: Show help
     cmds:
     - task --list
-

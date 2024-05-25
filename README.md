@@ -137,3 +137,7 @@ task: Available tasks for this project:
 * vault:uninstall-vault:                                  Uninstalls vault + eso resources from the local cluster
 * vault:uninstall-vault-eso-example:                      Uninstalls vault + eso resources from the local cluster
 ```
+
+## pre-commit config
+
+- see [pre-commit config](./posts/pre-commit/README.md)
