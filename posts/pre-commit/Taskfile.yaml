@@ -50,7 +50,7 @@ tasks:
             echo ".pre-commit-config.yaml already exists, skipping..."
           fi
         fi
-      - task: pre-commit-run-all-files
+      - task: run-all-files
 
       # too Naive ...
       #  - |
@@ -94,24 +94,24 @@ tasks:
       #         stages: [commit]
       #   EOF
 
-  pre-commit-get:
+  get:
     desc: "internal | exec - install pre-commit via homebrew"
     cmds:
     - echo "This might take a while on first-run ..."
     - pre-commit help &>/dev/null || brew install pre-commit
 
-  pre-commit-install:
+  install:
     desc: "internal | configure | pre-commit to local repo"
     deps: [pre-commit-get]
     cmds:
     - pre-commit install
 
-  pre-commit-run:
+  run:
     desc: "internal | execute | run-all pre-commit run on the staged files (files which are going to be commited)"
     cmds:
     - pre-commit run
 
-  pre-commit-run-all-files:
+  run-all-files:
     desc: "internal | execute | run-all pre-commit against all files"
     cmds:
     - pre-commit run --all-files
