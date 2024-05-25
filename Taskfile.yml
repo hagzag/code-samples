@@ -39,6 +39,9 @@ includes:
   # observability
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
 
+  # iac
+  iac: ./posts/terraform/Taskfile.yaml
+
 tasks:
 
   cluster-create:

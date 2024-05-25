@@ -1,0 +1,96 @@
+version: '3'
+
+silent: true
+
+tasks:
+
+  tf-aws-example:
+    vars: &vars
+      TF_DIR: '{{.TASKFILE_DIR}}/aws-demo-tf'
+    desc: "Run the AWS example"
+    cmds:
+    - task: init-plan
+      vars: *vars
+    - task: apply     
+      vars: *vars
+
+  tf-aws-example-destroy:
+    vars: &vars
+      TF_DIR: '{{.TASKFILE_DIR}}/aws-demo-tf'
+    desc: "Run the AWS example"
+    cmds:
+    - task: destroy
+      vars: *vars
+  
+  tg-aws-example:
+    vars: &vars
+      TF_DIR: '{{.TASKFILE_DIR}}/aws-demo-tf'
+    desc: "Run the AWS example"
+    cmds:
+    - echo "generate terragrunt.hcl in a terraform dir"
+    - |
+      cat<<EOF>'{{.TF_DIR}}/terragrunt.hcl'
+      terraform {}
+      EOF
+    - task: tg-init-plan
+      vars: *vars
+    - task: tg-apply     
+      vars: *vars
+  
+  tg-aws-example-destroy:
+    vars: &vars
+      TF_DIR: '{{.TASKFILE_DIR}}/aws-demo-tf'
+    desc: "Run the AWS example"
+    cmds:
+    - task: tg-destroy
+      vars: *vars
+    - rm '{{.TF_DIR}}/terragrunt.hcl'
+
+  # utils
+  init-plan:
+    internal: true
+    dir: '{{.TF_DIR}}'
+    summary: "Create the plan for current dir"
+    cmds:
+    - pwd
+    - terraform init
+    - terraform plan -out tfplan
+
+  tg-init-plan:
+    internal: true
+    summary: "Create the plan for current dir via terragrunt"
+    cmds:
+    - |
+      cat <<EOF > {{.TF_DIR}}/terragrunt.hcl
+      terraform {}
+      EOF
+    - terragrunt init --terragrunt-working-dir {{.TF_DIR}}
+    - terragrunt plan --terragrunt-working-dir {{.TF_DIR}} -out tfplan
+
+  apply:
+    internal: true
+    dir: '{{.TF_DIR}}'
+    summary: "Apply the tfplan in current dir"
+    cmds:
+    - terraform apply tfplan 
+  
+  tg-apply:
+    internal: true
+    summary: "Apply the tfplan in current dir via terragrunt"
+    cmds:
+    - terragrunt apply --terragrunt-working-dir {{.TF_DIR}} tfplan
+  
+  destroy:
+    internal: true
+    dir: '{{.TF_DIR}}'
+    summary: "Apply the tfplan in current dir"
+    cmds:
+    - terraform destroy
+
+  tg-destroy:
+    internal: true
+    summary: "Apply the tfplan in current dir"
+    cmds:
+    - terragrunt destroy --terragrunt-working-dir {{.TF_DIR}}
+
+ 
