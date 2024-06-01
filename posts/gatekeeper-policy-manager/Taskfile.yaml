@@ -1,0 +1,92 @@
+version: '3'
+
+silent: true
+
+includes:
+  helm: ../../config/tasks/helm.yaml
+
+vars:
+  gkpm_controller_name: &gkpmname gatekeeper-policy-manager
+  gkpm_controller_namespace: gatekeeper-system
+  gkpm_controller_repo: https://sighupio.github.io/gatekeeper-policy-manager
+  gkpm_controller_chart_version: 0.10.0
+  gkpm_local_registry: 'registry.localhost:5002'
+
+tasks:
+
+  install-dev:
+    cmds:
+      - task: set-argocd-context
+      - task: dryrun
+      - task: apply
+
+  install:
+    cmds:
+      - task: dryrun
+      - task: apply
+
+  create-wrapper-chart:
+    dir: '{{.ROOT_DIR}}/config/apps/'
+    cmds:
+      - task: helm:create-wrapper-chart
+        vars:
+          APP_WRAPPER_NAME: '{{.gkpm_controller_name}}'
+          APP_NAME: '{{.gkpm_controller_name}}'
+          APP_REPO: '{{.gkpm_controller_repo}}'
+          APP_VERSION: '{{.gkpm_controller_chart_version}}'
+
+  create-values:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gkpm_controller_name}}'
+    cmds:
+      - |
+        test -f values.yaml && mv values.yaml values.yaml.bak || true
+        cat<<EOF > values.yaml
+        {{.gkpm_controller_name}}:
+          config:
+            secretKey: dev-key-not-secure
+          # ingress:
+          #   enabled: true
+          #   ingressClassName: "nginx"
+          #   hosts:
+          #     - host: &gpmhost gpm.k8s.localhost
+          #       paths:
+          #         - path: "/"
+          #       pathType: ImplementationSpecific
+          #   tls:
+          #    - secretName: tls-secret
+          #      hosts:
+          #        - *gpmhost
+        EOF
+  
+  dryrun:
+    vars: &gkpmvars
+      CHART: '{{.gkpm_controller_name}}'
+      NAMESPACE: '{{.gkpm_controller_namespace}}'
+      REPO_URL: '{{.gkpm_controller_repo}}'
+      VERSION: '{{.gkpm_controller_chart_version}}'
+      CHART_FOLDER: './config/apps/{{.gkpm_controller_name}}'
+      VALUES_FILES: './config/apps/{{.gkpm_controller_name}}/values.yaml'
+    cmds:
+      - task: helm:repo_add
+        vars: *gkpmvars
+      - task: helm:dependency_build
+        vars: *gkpmvars
+      - task: helm:template
+        vars: *gkpmvars
+      - task: helm:template_apply_dry_run
+        vars: *gkpmvars
+  
+  apply:
+    cmds:
+      - task: helm:dependency_build 
+        vars: *gkpmvars
+      - task: helm:install
+        vars: *gkpmvars
+  
+  full-run:
+    cmds:
+      - task: create-wrapper-chart
+      - task: create-values
+      - task: dryrun
+      - task: apply
+  

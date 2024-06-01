@@ -1,0 +1,15 @@
+gatekeeper-policy-manager:
+  config:
+    secretKey: dev-key-not-secure
+  # ingress:
+  #   enabled: true
+  #   ingressClassName: "nginx"
+  #   hosts:
+  #     - host: &gpmhost gpm.k8s.localhost
+  #       paths:
+  #         - path: "/"
+  #       pathType: ImplementationSpecific
+  #   tls:
+  #    - secretName: tls-secret
+  #      hosts:
+  #        - *gpmhost

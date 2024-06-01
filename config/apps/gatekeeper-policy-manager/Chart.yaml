@@ -1,0 +1,9 @@
+apiVersion: v2
+name: 'gatekeeper-policy-manager'
+description: A Helm chart for wrapping gatekeeper-policy-manager
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: 'gatekeeper-policy-manager'
+    version: '0.10.0'
+    repository: "https://sighupio.github.io/gatekeeper-policy-manager"

@@ -6,7 +6,10 @@ storage/
 .config/.dockerconfig.json
 .config/docker-config/.dockerconfig.json
 posts/awx/ansible/ansible.log
+
 config/apps/my-chart-wrapper-test
+config/apps/*.bak/*
+config/apps/**/values.yaml.bak
 
 # sealed-secrets key pair which can be used to decrypt secrets 
 # should / need to store in a secure location
@@ -36,4 +39,5 @@ terraform.*.tfvars
 *.tfstate
 
 .venv
+
 

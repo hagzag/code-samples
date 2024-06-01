@@ -1,0 +1,210 @@
+version: '3'
+
+silent: true
+
+includes:
+  helm: ../../config/tasks/helm.yaml
+
+vars:
+  gk_controller_name: &gkname gatekeeper
+  gk_controller_namespace: gatekeeper-system
+  gk_controller_repo: https://open-policy-agent.github.io/gatekeeper/charts
+  gk_controller_chart_version: 3.16.3
+  gk_local_registry: 'registry.localhost:5002'
+
+tasks:
+
+  install-dev:
+    cmds:
+      - task: set-argocd-context
+      - task: dryrun
+      - task: apply
+
+  install:
+    cmds:
+      - task: dryrun
+      - task: apply
+
+  create-wrapper-chart:
+    dir: '{{.ROOT_DIR}}/config/apps/'
+    cmds:
+      - task: helm:create-wrapper-chart
+        vars:
+          APP_WRAPPER_NAME: '{{.gk_controller_name}}'
+          APP_NAME: '{{.gk_controller_name}}'
+          APP_REPO: '{{.gk_controller_repo}}'
+          APP_VERSION: '{{.gk_controller_chart_version}}'
+
+  create-values:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}'
+    cmds:
+      - |
+        test -f values.yaml && mv values.yaml values.yaml.bak || true
+        cat<<EOF > values.yaml
+        {{.gk_controller_name}}: {}
+        EOF
+  
+  dryrun:
+    vars: &gkvars
+      CHART: '{{.gk_controller_name}}'
+      NAMESPACE: '{{.gk_controller_namespace}}'
+      REPO_URL: '{{.gk_controller_repo}}'
+      VERSION: '{{.gk_controller_chart_version}}'
+      CHART_FOLDER: './config/apps/{{.gk_controller_name}}'
+      VALUES_FILES: './config/apps/{{.gk_controller_name}}/values.yaml'
+    cmds:
+      - task: helm:repo_add
+        vars: *gkvars
+      - task: helm:dependency_build
+        vars: *gkvars
+      - task: helm:template
+        vars: *gkvars
+      - task: helm:template_apply_dry_run
+        vars: *gkvars
+  
+  apply:
+    cmds:
+      - task: helm:dependency_build 
+        vars: *gkvars
+      - task: helm:install
+        vars: *gkvars
+  
+  full-run:
+    cmds:
+      - task: create-wrapper-chart
+      - task: create-values
+      - task: dryrun
+      - task: apply
+  
+  # demo tasks
+
+  delete-constraint-template:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}-demo'
+    cmds:
+      - kubectl delete constrainttemplates.templates.gatekeeper.sh k8srequiredlabels
+
+  create-constraint-teample:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}-demo'
+    cmds:
+      - |
+
+        # cat <<EOF > constrainttemplate.yaml
+
+        cat << EOF | kubectl apply -f -
+        apiVersion: templates.gatekeeper.sh/v1
+        kind: ConstraintTemplate
+        metadata:
+          name: k8srequiredlabels
+        spec:
+          crd:
+            spec:
+              names:
+                kind: K8sRequiredLabels
+              validation:
+                # Schema for the `parameters` field
+                openAPIV3Schema:
+                  type: object
+                  properties:
+                    labels:
+                      type: array
+                      items:
+                        type: string
+          targets:
+            - target: admission.k8s.gatekeeper.sh
+              rego: |
+                package k8srequiredlabels
+
+                violation[{"msg": msg, "details": {"missing_labels": missing}}] {
+                  provided := {label | input.review.object.metadata.labels[label]}
+                  required := {label | label := input.parameters.labels[_]}
+                  missing := required - provided
+                  count(missing) > 0
+                  msg := sprintf("you must provide labels: %v", [missing])
+                }
+
+        EOF
+  
+  delete-constraint:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}-demo'
+    cmds:
+      - kubectl delete k8srequiredlabels.constraints.gatekeeper.sh ns-must-have-gk
+
+  create-constraint:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}-demo'
+    cmds:  
+      - |
+        # cat <<EOF > constraint.yaml
+        cat << EOF | kubectl apply -f -
+        apiVersion: constraints.gatekeeper.sh/v1beta1
+        kind: K8sRequiredLabels
+        metadata:
+          name: ns-must-have-gk
+        spec:
+          match:
+            excludedNamespaces:
+              - kube-*
+              # - kube-node-lease
+              # - kube-system
+              - goldilocks
+            kinds:
+              - apiGroups: [""]
+                kinds: ["Namespace"]
+          parameters:
+            labels: ["gatekeeper"]
+        EOF
+  
+  test-constraint-expect-failure:
+    summary: Test the constraint by creating a namespace without the required label
+    cmds:
+      - kubectl create ns test-ns-random-name-no-labels
+    ignore_error: true
+
+  test-constraint-expect-success:
+    summary: Test the constraint by creating a namespace without the required label
+    cmds:
+      - |
+        cat << EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          creationTimestamp: null
+          labels:
+            gatekeeper: "true"
+            goldilocks.fairwinds.com/enabled: "true"
+          name: test-ns
+        spec: {}
+        status: {}
+        EOF
+
+  # still working on it
+  # create-mutation:
+  #   dir: '{{.ROOT_DIR}}/config/apps/{{.gk_controller_name}}-demo/'
+  #   cmds:
+  #     - |
+  #       # cat <<EOF > mutation.yaml
+  #       cat << EOF | kubectl apply -f -
+  #       apiVersion: mutations.gatekeeper.sh/v1
+  #       kind: AssignMetadata
+  #       metadata:
+  #         name: fix-psa-value
+  #       spec:
+  #         location: metadata.labels."goldilocks.fairwinds.com/enabled" 
+  #         parameters:
+  #           assign:
+  #             value: "true"
+  #         match:
+  #           excludedNamespaces:
+  #           - kube-*
+  #           # - kube-node-lease
+  #           # - kube-system
+  #           kinds:
+  #           - apiGroups:
+  #             - ""
+  #             kinds:
+  #             - Namespace
+  #           scope: Cluster
+  #         parameters:
+  #           assign:
+  #             value: privileged
+  #       EOF
+  

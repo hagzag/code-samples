@@ -41,6 +41,11 @@ includes:
   
   # scaling
   goldilocks: ./posts/goldilocks/Taskfile.yaml
+
+  # policy
+  gatekeeper: ./posts/gatekeeper/Taskfile.yaml
+  gatekeeper-pm: ./posts/gatekeeper-policy-manager/Taskfile.yaml
+
   # observability
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
 
@@ -109,11 +114,6 @@ tasks:
     # - kubectl apply -k .config/sealed-secrets
     # - task: sealed-secrets:local-apply
 
-  gatekeeper:
-    desc: Run the gatekeeper project
-    cmds:
-    - task: gatekeeper:install
-
   goldilocks-minimal:
     desc: Run the goldilocks project
     cmds:
@@ -122,7 +122,26 @@ tasks:
     - task: reflector:install
     - task: reloader:install
     - task: goldilocks:install
-    - open https://goldilocks.k8s.localhost
+    # - open https://goldilocks.k8s.localhost
+
+  opa-gatekeeper:
+    desc: Run the opa-gatekeeper project
+    cmds:
+    - task: goldilocks-minimal
+    - task: gatekeeper:full-run
+    - task: gatekeeper-pm:full-run
+    # - open https://gpm.k8s.localhost
+  
+  opa-gatekeeper-demo:
+    - task: gatekeeper:create-constraint-teample
+    - task: gatekeeper:create-constraint
+    - task: gatekeeper:test-constraint-expect-failure
+    - task: gatekeeper:test-constraint-expect-success
+  
+  opa-gatekeeper-demo-cleanup:
+    - task: gatekeeper:delete-constraint
+    - task: gatekeeper:delete-constraint-template
+  
 
   run-awx:
     vars:
