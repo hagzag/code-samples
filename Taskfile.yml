@@ -35,7 +35,8 @@ includes:
   
   # helm chart registry
   chartmeusem: ./posts/chartmeusem/tasks.yaml
-  
+  # scaling
+  goldilocks: ./posts/goldilocks/Taskfile.yaml
   # observability
   monitoring-n-logging: ./posts/monitoring-n-logging/tasks.yaml
 

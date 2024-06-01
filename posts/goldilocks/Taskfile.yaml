@@ -1,0 +1,123 @@
+version: '3'
+
+silent: true
+
+includes:
+  helm: ../../config/tasks/helm.yaml
+
+vars:
+  gl_controller_name: &glname goldilocks
+  gl_controller_namespace: *glname
+  gl_controller_repo: https://charts.fairwinds.com/stable
+  gl_controller_chart_version: 8.0.1
+  gl_local_registry: 'registry.localhost:5002'
+
+tasks:
+
+  install-dev:
+    cmds:
+      - task: set-argocd-context
+      - task: dryrun
+      - task: apply
+
+  install:
+    cmds:
+      - task: dryrun
+      - task: apply
+      - kubectl label ns goldilocks goldilocks.fairwinds.com/enabled=true
+
+  create-wrapper-chart:
+    dir: '{{.ROOT_DIR}}/config/apps/'
+    cmds:
+      - task: helm:create-wrapper-chart
+        vars:
+          APP_WRAPPER_NAME: '{{.gl_controller_name}}'
+          APP_NAME: '{{.gl_controller_name}}'
+          APP_REPO: '{{.gl_controller_repo}}'
+          APP_VERSION: '{{.gl_controller_chart_version}}'
+
+  create-values:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.gl_controller_name}}'
+    cmds:
+      - |
+        test -f values.yaml && mv values.yaml values.yaml.bak || true
+        cat<<EOF > values.yaml
+        {{.gl_controller_name}}:
+          image:
+            # image.repository -- Repository for the goldilocks image
+            repository: us-docker.pkg.dev/fairwinds-ops/oss/goldilocks
+            # image.tag -- The goldilocks image tag to use
+            tag: v4.10.0
+          # For testing, make sure to install the vpa and metrics-server as sub-charts
+          vpa:
+            enabled: true
+          controller:
+            flags:
+              on-by-default: true
+              exclude-namespaces: kube-system
+            deployment:
+              additionalLabels:
+                test: value
+              podAnnotations:
+                foo: bar
+            rbac:
+              extraRules:
+                - apiGroups:
+                    - "batch"
+                  resources:
+                    - "*"
+                  verbs:
+                    - "get"
+                    - "list"
+                    - "watch"
+              extraClusterRoleBindings:
+                - view
+          dashboard:
+            basePath: /
+            ingress:
+              enabled: true
+              ingressClassName: nginx
+              hosts:
+                - host: &host goldilocks.k8s.localhost
+                  paths:
+                    - path: /
+                      type: ImplementationSpecific
+              tls:
+                - secretName: tls-secret
+                  hosts:
+                    - *host
+            replicaCount: 1
+        EOF
+  
+  dryrun:
+    vars: &glvars
+      CHART: '{{.gl_controller_name}}'
+      NAMESPACE: '{{.gl_controller_namespace}}'
+      REPO_URL: '{{.gl_controller_repo}}'
+      VERSION: '{{.gl_controller_chart_version}}'
+      CHART_FOLDER: './config/apps/{{.gl_controller_name}}'
+      VALUES_FILES: './config/apps/{{.gl_controller_name}}/values.yaml'
+    cmds:
+      - task: helm:repo_add
+        vars: *glvars
+      - task: helm:dependency_build
+        vars: *glvars
+      - task: helm:template
+        vars: *glvars
+      - task: helm:template_apply_dry_run
+        vars: *glvars
+  
+  apply:
+    cmds:
+      - task: helm:dependency_build 
+        vars: *glvars
+      - task: helm:install
+        vars: *glvars
+  
+  full-run:
+    cmds:
+      - task: create-wrapper-chart
+      - task: create-values
+      - task: dryrun
+      - task: apply
+  
