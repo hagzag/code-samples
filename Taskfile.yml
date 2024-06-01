@@ -10,7 +10,6 @@ includes:
   helm: ./config/tasks/helm.yaml
   templates: ./config/tasks/templates.yaml
   utils: ./config/tasks/utils.yaml
-  bitwarden: ./config/tasks/bitwarden.yaml
   # tests
   test: ./config/tasks/test.yaml
   # posts
@@ -22,12 +21,11 @@ includes:
   pre-commit: ./posts/pre-commit/Taskfile.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
-  helm-chart-github-repo: ./posts/helm-chart-github-repo/tasks.yaml
+
   # common tools foor configuration managment   
   config-managment: ./posts/config/tasks.yaml
   vault: ./posts/vault-eso/tasks.yaml
   sealed-secrets: ./posts/sealed-secrets/Taskfile.yaml
-  semantic-release: ./posts/semantic-release/Taskfile.yaml
 
   awx: ./posts/awx/tasks.yaml
   # applications / packages
@@ -35,6 +33,7 @@ includes:
   
   # helm chart registry
   chartmeusem: ./posts/chartmeusem/tasks.yaml
+  
   # scaling
   goldilocks: ./posts/goldilocks/Taskfile.yaml
   # observability
@@ -102,6 +101,16 @@ tasks:
     # - task: sealed-secrets:create-private-key
     # - kubectl apply -k .config/sealed-secrets
     # - task: sealed-secrets:local-apply
+
+  gatekeeper:
+    desc: Run the gatekeeper project
+    cmds:
+    - task: gatekeeper:install
+
+  goldilocks:
+    desc: Run the goldilocks project
+    cmds:
+    - task: goldilocks:install
 
   run-awx:
     vars:
