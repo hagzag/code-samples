@@ -114,10 +114,15 @@ tasks:
     cmds:
     - task: gatekeeper:install
 
-  goldilocks:
+  goldilocks-minimal:
     desc: Run the goldilocks project
     cmds:
+    - task: cluster-create
+    - task: ingress-nginx:install
+    - task: reflector:install
+    - task: reloader:install
     - task: goldilocks:install
+    - open https://goldilocks.k8s.localhost
 
   run-awx:
     vars:
