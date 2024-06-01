@@ -17,7 +17,7 @@ includes:
   external-dns: ./posts/PGK-part-3/tasks.yaml
   coredns: ./posts/coredns/tasks.yaml
   argocd: ./posts/argocd/tasks.yaml
-  ingress-nginx: ./posts/ingress-nginx/tasks.yaml
+  ingress-nginx: ./posts/ingress-nginx/Taskfile.yaml
   pre-commit: ./posts/pre-commit/Taskfile.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
@@ -77,7 +77,7 @@ tasks:
   ingress-nginx:
     desc: Deploy nginx project
     cmds:
-    - task: ingress-nginx:install-argocd-app
+    - task: ingress-nginx:install
 
   config-managment:
     desc: Run all config-managment tasks
