@@ -52,6 +52,9 @@ includes:
   # iac
   iac: ./posts/terraform/Taskfile.yaml
 
+  # whoami-demo-app via nginx
+  whoami: ./posts/whoami/Taskfile.yaml
+  
 tasks:
 
   cluster-create:
