@@ -103,20 +103,6 @@ tasks:
     - kubectl apply -k .config/sealed-secrets
     - task: sealed-secrets:local-apply
 
-  so-far:
-    desc: Run core tasks
-    cmds:
-    - task: cluster-create
-    - kubectl apply -k .config/tls
-    - task: argocd
-    - task: config-managment
-    - task: nginx
-    - task: chartmeusem:install-argo-app
-    # - task: monitoring-n-logging:all
-    # - task: sealed-secrets:create-private-key
-    # - kubectl apply -k .config/sealed-secrets
-    # - task: sealed-secrets:local-apply
-
   goldilocks-minimal:
     desc: Run the goldilocks project
     cmds:
