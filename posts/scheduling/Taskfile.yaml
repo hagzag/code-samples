@@ -1,0 +1,119 @@
+version: '3'
+
+silent: true
+
+includes:
+  whoami: ../whoami/Taskfile.yaml
+
+tasks:
+  
+  # hardcoded-node-name scenario
+  hardcoded-node-name-agent-cleanup:
+    cmds:
+    - kubectl delete pod my-pod
+
+  hardcoded-node-name-agent:
+    cmds:
+    - task: hardcoded-node-name
+      vars:
+        NODE_NAME: "k3d-{{.CLUSTER_NAME}}-agent-0"
+        
+  hardcoded-node-name:
+    internal: true
+    requires:
+      vars:
+      - NODE_NAME
+    cmds:
+    - |
+      kubectl run my-pod --image=docker.io/traefik/whoami:v1.10.1 --overrides='{"apiVersion": "v1", "spec": {"nodeName": "{{.NODE_NAME}}"}}'
+      kubectl wait --for=condition=Ready pod/my-pod
+      kubectl get po -l run=my-pod -o wide -ojson | jq '.items[] | {podName: .metadata.name, nodeName: .spec.nodeName}'
+  
+  # node-labels scenario
+
+  show-all-nodes-labels: |
+    kubectl get nodes -o json | jq -r '.items[] | {name: .metadata.name, labels: .metadata.labels}'
+  
+  show-node-labels:
+    requires:
+      vars:
+      - NODE_NAME
+      - KEY
+      - VALUE
+    cmd: kubectl get nodes '{{.NODE_NAME}}' -o json | jq -r '.metadata.labels'
+
+  add-label-to-node:
+    interactive: true
+    cmds:
+    - |
+      kubectl label nodes '{{.NODE_NAME}}' '{{.KEY}}={{.VALUE}}'
+
+  remove-label-from-node:
+    requires:
+      vars:
+      - NODE_NAME
+      - KEY
+      - VALUE
+    interactive: true
+    cmds:
+    - |
+      kubectl label nodes '{{.NODE_NAME}}' '{{.KEY}}-'
+
+  # node-taints scenario
+
+  show-all-nodes-taints: |
+    kubectl get nodes -o json | jq -r '.items[] | {name: .metadata.name, taints: .spec.taints}'
+  
+  add-taint-a-node:
+    requires:
+      vars:
+      - NODE_NAME
+      - KEY
+      - VALUE
+    interactive: true
+    cmds:
+    - |
+      kubectl taint nodes '{{.NODE_NAME}}' '{{.KEY}}={{.VALUE}}:NoSchedule'
+
+  remove-taint-from-node:
+    requires:
+      vars:
+      - NODE_NAME
+      - KEY
+      - VALUE
+    interactive: true
+    cmds:
+    - |
+      kubectl taint nodes '{{.NODE_NAME}}' key:NoSchedule-
+
+  create-a-deployment-with-node-selector:
+    requires:
+      vars:
+      - NODE_NAME
+    interactive: true
+    cmds:
+    - |
+      kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-deployment.yaml
+      yq eval '.spec.template.spec.nodeSelector = {"kubernetes.io/hostname": "{{.NODE_NAME}}"}' -i nginx-deployment.yaml
+      kubectl apply -f nginx-deployment.yaml
+
+  create-a-deployment-with-tollaration:
+    requires:
+      vars:
+      - NODE_NAME
+    interactive: true
+    cmds:
+    - |
+      kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-deployment.yaml
+      yq eval '.spec.template.spec.tolerations = [{"key": "key", "operator": "Equal", "value": "value", "effect": "NoSchedule"}]' -i nginx-deployment.yaml
+      kubectl apply -f nginx-deployment.yaml
+
+  whoami-node-affinity-values:
+    dir: '{{.ROOT_DIR}}/config/apps/{{.whoami_controller_name}}'
+    cmds:
+      - |
+        yq e 'del(.whoami.affinity) | .whoami.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0] = {"weight": 100, "podAffinityTerm": {"labelSelector": {"matchExpressions": [{"key": "{{.KEY}}", "operator": "In", "values": ["{{.VALUE}}"]}]}, "topologyKey": "kubernetes.io/hostname"}}' -i values.yaml
+  
+  whoami-install: 
+    cmds:
+    - task: whoami:install

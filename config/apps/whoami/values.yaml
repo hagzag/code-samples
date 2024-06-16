@@ -9,11 +9,10 @@ whoami:
       - host: &host whoami.k8s.localhost
         paths:
           - /
-    tls: 
+    tls:
       - secretName: tls-secret
         hosts:
           - *host
-
   resources:
     # limits:
     #   cpu: 100m
@@ -21,3 +20,15 @@ whoami:
     requests:
       cpu: 100m
       memory: 128Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: my-key
+                  operator: In
+                  values:
+                    - my-value
+            topologyKey: kubernetes.io/hostname
