@@ -55,6 +55,9 @@ includes:
   # whoami-demo-app via nginx
   whoami: ./posts/whoami/Taskfile.yaml
   
+  # aws-sso
+  aws-sso: posts/aws-sso/Taskfile.yaml
+  
 tasks:
 
   cluster-create:

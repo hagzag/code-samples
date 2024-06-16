@@ -1,0 +1,28 @@
+version: '3'
+
+tasks:
+
+  create-profile:
+    desc: Create an AWS SSO profile
+    requires:
+      vars:
+      - AWS_SSO_PROFILE_NAME
+    interactive: true
+    cmds:
+    - aws configure sso --profile '{{.AWS_SSO_PROFILE_NAME}}'
+  
+  status:
+    desc: Get the STS status
+    requires:
+      vars:
+      - AWS_SSO_PROFILE_NAME
+    cmds:
+    - aws sts get-caller-identity --profile '{{.AWS_SSO_PROFILE_NAME}}'
+
+  relogin:
+    desc: Validate the session
+    requires:
+      vars:
+      - AWS_SSO_PROFILE_NAME
+    cmds:
+    - aws sso login --profile '{{.AWS_SSO_PROFILE_NAME}}'
