@@ -55,8 +55,6 @@ includes:
   # whoami-demo-app via nginx
   whoami: ./posts/whoami/Taskfile.yaml
   
-  # scheduling
-  scheduling: ./posts/scheduling/Taskfile.yaml
 
   # aws-sso
   aws-sso: ./posts/aws-sso/Taskfile.yaml
