@@ -20,15 +20,3 @@ whoami:
     requests:
       cpu: 100m
       memory: 128Mi
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: my-key
-                  operator: In
-                  values:
-                    - my-value
-            topologyKey: kubernetes.io/hostname
