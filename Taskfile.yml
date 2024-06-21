@@ -60,9 +60,6 @@ includes:
 
   # aws-sso
   aws-sso: ./posts/aws-sso/Taskfile.yaml
-
-  # aws-sso
-  aws-sso: posts/aws-sso/Taskfile.yaml
   
 tasks:
 
