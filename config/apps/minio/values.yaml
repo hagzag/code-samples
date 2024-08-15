@@ -1,0 +1,69 @@
+minio:
+  environment:
+    MINIO_BROWSER_REDIRECT_URL: https://minio-console.k8s.localhost
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    path: /
+    hosts:
+      - minio.k8s.localhost
+    tls:
+      - secretName: tls-secret
+        hosts:
+          - minio.k8s.localhost
+  consoleIngress:
+    enabled: true
+    ingressClassName: nginx
+    path: /
+    hosts:
+      - minio-console.k8s.localhost
+    tls:
+      - secretName: minio-console-tls
+        hosts:
+          - minio-console.k8s.localhost
+  replicas: 1
+  rootUser: admin
+  rootPassword: changeme
+  persistence:
+    enabled: true
+    existingClaim: local-path-pvc
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 512Mi
+  resources:
+    requests:
+      memory: 500Mi
+  gateway:
+    replicas: 1
+  mode: standalone
+  buckets:
+  - name: chartmuseum
+    policy: none
+    purge: true
+    versioning: false
+    objectlocking: false
+  - name: argo-artifacts
+    policy: public
+    purge: true
+    versioning: false
+    objectlocking: false
+  - name: gitlab-backup
+    policy: none
+    purge: true
+    versioning: false
+    objectlocking: false
+  # - name: github-backup
+  #   policy: none
+  #   purge: true
+  #   versioning: false
+  #   objectlocking: false
+  # - name: subscription-state-store
+  #   policy: none
+  #   purge: true
+  #   versioning: false
+  #   objectlocking: false
+  # - name: vault-backend
+  #   policy: none
+  #   purge: true
+  #   versioning: false
+  #   objectlocking: false
