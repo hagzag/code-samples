@@ -1,0 +1,45 @@
+argo-workflows:
+  nameOverride: argo
+  executor:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1
+        memory: 1024Mi
+  server:
+    secure: false
+    extraArgs:
+    - --auth-mode=client
+    - --auth-mode=server
+    ingress:
+      ingressClassName: nginx
+      enabled: true
+      hosts:
+        - argo.k8s.localhost
+      paths: 
+        - /
+      pathType: Prefix
+      tls:
+        - secretName: tls-secret
+          hosts:
+            - argo.k8s.localhost
+  useDefaultArtifactRepo: true
+  useStaticCredentials: true
+  artifactRepository:
+    archiveLogs: false
+    s3:
+      accessKeySecret:
+        name: minio-creds
+        key: accesskey
+      secretKeySecret:
+        name: minio-creds
+        key: secretkey
+      insecure: true
+      bucket: argo-artifacts
+      endpoint: minio.minio.svc.cluster.local:9000
+      region: us-k3d-1
+      useSDKCreds: false
+      encryptionOptions:
+        enableEncryption: false
