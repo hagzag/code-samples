@@ -1,0 +1,104 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.min.io/'
+    targetRevision: 4.0.15
+    helm:
+      valueFiles:
+        - values.yaml
+      values: |
+        minio:
+          environment:
+            MINIO_BROWSER_REDIRECT_URL: https://minio-console.k8s.localhost
+          ingress:
+            enabled: true
+            path: /
+            hosts:
+              - minio.k8s.localhost
+            tls:
+              - secretName: minio-tls
+                hosts:
+                  - minio.k8s.localhost
+          consoleIngress:
+            enabled: true
+            path: /
+            hosts:
+              - minio-console.k8s.localhost
+            tls:
+              - secretName: minio-console-tls
+                hosts:
+                  - minio-console.k8s.localhost
+          replicas: 1
+          rootUser: admin
+          rootPassword: changeme
+          persistence:
+            enabled: true
+            existingClaim: local-path-pvc
+            storageClass: "local-path"
+            accessMode: ReadWriteOnce
+            size: 512Mi
+          resources:
+            requests:
+              memory: 500Mi
+          gateway:
+            replicas: 1
+          mode: standalone
+          buckets:
+          - name: chartmuseum
+            policy: none
+            purge: true
+            versioning: false
+            objectlocking: false
+          - name: argo-artifacts
+            policy: public
+            purge: true
+            versioning: false
+            objectlocking: false
+          - name: gitlab-backup
+            policy: none
+            purge: true
+            versioning: false
+            objectlocking: false
+          # - name: github-backup
+          #   policy: none
+          #   purge: true
+          #   versioning: false
+          #   objectlocking: false
+          # - name: subscription-state-store
+          #   policy: none
+          #   purge: true
+          #   versioning: false
+          #   objectlocking: false
+          # - name: vault-backend
+          #   policy: none
+          #   purge: true
+          #   versioning: false
+          #   objectlocking: false
+    chart: minio
+  destination:
+    namespace: minio
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - Validate=false
+      - CreateNamespace=false
+      - PrunePropagationPolicy=foreground
+      - PruneLast=false
+      - ApplyOutOfSyncOnly=false
+      - Prune=true
+    retry:
+      limit: -1
+      backoff:
+        duration: 20s
+        factor: 2
+        maxDuration: 15m

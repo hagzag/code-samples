@@ -59,6 +59,7 @@ includes:
   # aws-sso
   aws-sso: ./posts/aws-sso/Taskfile.yaml
   
+  minio: ./posts/minio/Taskfile.yaml
 tasks:
 
   cluster-create:
