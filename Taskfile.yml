@@ -59,7 +59,10 @@ includes:
   # aws-sso
   aws-sso: ./posts/aws-sso/Taskfile.yaml
   
+  # argo-workflows
+  argo-workflows: ./posts/argo-workflows/Taskfile.yaml
   minio: ./posts/minio/Taskfile.yaml
+
 tasks:
 
   cluster-create:
@@ -135,7 +138,16 @@ tasks:
   opa-gatekeeper-demo-cleanup:
     - task: gatekeeper:delete-constraint
     - task: gatekeeper:delete-constraint-template
-  
+
+  argo-workflows:
+    desc: Run the argo-workflows project
+    cmds:
+    - task: config-managment
+    - task: ingress-nginx
+    - task: minio:full-run
+    # - task: argo-wokrflows:full-run
+    # - task: argo-wokrflows:secret
+    # - task: argo-wokrflows:run-workflow  
 
   run-awx:
     vars:
