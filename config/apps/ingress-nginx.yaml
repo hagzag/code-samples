@@ -7,14 +7,22 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/kubernetes/ingress-nginx.git'
-    path: charts/ingress-nginx
+    repoURL: 'https://gitlab.tikalk.dev/tikalk/users/hagzag/code-samples.git'
+    path: config/apps/ingress-nginx
     targetRevision: main
     helm:
       releaseName: nginx
       values: |
-        extraArgs:
-          default-ssl-certificate: "ingress-nginx/tls-secret"
+        ingress-nginx:
+          controller:
+            config:
+              force-ssl-redirect: "true"
+            extraArgs:
+              default-ssl-certificate: "ingress-nginx/tls-secret"
+            autoscaling:
+              enabled: false
+          extraArgs:
+            default-ssl-certificate: "ingress-nginx/tls-secret"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: ingress-nginx
