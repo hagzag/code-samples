@@ -148,11 +148,6 @@ tasks:
       - task: dryrun
       - task: apply
         
-  full-run-with-gitops:
-    cmds:
-      - task: create-argo-helm-app
-      - task: install-argocd-app
-        
 
   set-ns-context:
     internal: true
