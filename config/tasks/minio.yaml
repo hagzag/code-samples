@@ -3,8 +3,8 @@ version: '3'
 silent: true
 
 includes:
-  helm: './../../config/tasks/helm.yaml'
-  argocd: './../argocd/tasks.yaml'
+  helm: helm.yaml
+  argocd: argo-cd.yaml
 
 vars:
   mi_controller_name: &miname minio
