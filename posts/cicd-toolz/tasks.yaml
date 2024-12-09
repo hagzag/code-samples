@@ -40,4 +40,3 @@ tasks:
     desc: Run the pod manifest
     cmds:
     - kubectl delete po cicd-toolz
-

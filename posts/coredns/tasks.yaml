@@ -26,5 +26,3 @@ tasks:
     # - |
     #   DNS_Q=$(kubectl exec -it dnsutils -- dig +short kube-dns.kube-system.svc.cluster.local)
     #   KUBEDNS_IP=$(kubectl get svc -n kube-system kube-dns -o json | jq -r '.spec.clusterIP')
-
-

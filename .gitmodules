@@ -6,4 +6,3 @@
 	path = config/apps/cicd-toolz
 	url = https://github.com/hagzag/cicd-toolz.git
 	branch = main
-

@@ -86,7 +86,7 @@ tasks:
       {
         "yaml.schemas": {
           "https://taskfile.dev/schema.json": [
-            "config/tasks/*.yaml",
+            "tasks/*.yaml",
             "Taskfile.yml",
           ]
         }
