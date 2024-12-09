@@ -60,7 +60,7 @@ includes:
   aws-sso: ./posts/aws-sso/Taskfile.yaml
   
   # argo-workflows
-  argo-workflows: ./posts/argo-workflows/Taskfile.yaml
+  argo-workflows: ./config/tasks/argo-workflows.yaml
   minio: ./posts/minio/Taskfile.yaml
 
 tasks:
