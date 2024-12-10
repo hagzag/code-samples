@@ -99,7 +99,7 @@ tasks:
       unzip hostctl_${HOSTCTL}_windows_64-bit.zip && \
       rm hostctl_${HOSTCTL}_windows_64-bit.zip LICENSE README.md{{end}}
       {{if eq OS "darwin"}}
-      brew install hostdb{{end}}
+      brew install guumaster/tap/hostctl{{end}}
       {{if eq OS "linux"}}
       curl -LO https://github.com/guumaster/hostctl/releases/download/v$HOSTCTL/hostctl_${HOSTCTL}_linux_64-bit.tar.gz && \
       tar -xvf hostctl_${HOSTCTL}_linux_64-bit.tar.gz && \
