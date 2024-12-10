@@ -79,7 +79,7 @@ tasks:
     prompt: "please approve the commit message '{{.COMMIT_MSG}}'"
     cmds:
     - echo "commiting changes to pr with message \"$COMMIT_MSG\""
-    - git status -sb && git commit -m "$COMMIT_MSG"
+    - git status -sb || git commit -m "$COMMIT_MSG" 
 
   push-pr-branch-changes-to-default-remote:
     desc: Push changes to pr branch
