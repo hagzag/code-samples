@@ -21,4 +21,4 @@ includes:
   gatekeeper-pm: ./suites/gatekeeper-policy-manager/Taskfile.yaml
 
   # # observability
-  # monitoring-n-logging: ./config/tasks/monitoring-n-logging.yaml
+  #TODO: monitoring-n-logging: ./monitoring-n-logging.yaml
