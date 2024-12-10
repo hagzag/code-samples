@@ -10,27 +10,24 @@ includes:
   # tests
   test: ./config/tasks/test.yaml
 
-  # utils
+  # common tools for this repo
+  tools: ./config/tasks/tools.yaml
+
+  # utility tasks
   helm: ./config/tasks/helm.yaml
   templates: ./config/tasks/templates.yaml
   utils: ./config/tasks/utils.yaml
   
+  # one-off tasks
   ingress-nginx: ./config/tasks/ingress-nginx.yaml
   
-
   # suites
   suites: 
     taskfile: ./config/tasks/suites.yml
     
-  
-  production-rediness-external-dns: ./config/tasks/suites/production-rediness-series/external-dns/Taskfile.yaml
   coredns: ./config/tasks/suites/coredns/Taskfile.yaml
-  
   pre-commit: ./config/tasks/suites/pre-commit/Taskfile.yaml
-  # common tools for this repo
-  tools: ./config/tasks/tools.yaml
-
-  # common tools foor configuration managment   
+  
   
   reloader: ./config/tasks/reloader.yaml
   descheduler: ./config/tasks/descheduler.yaml
@@ -67,13 +64,24 @@ tasks:
 
 
   # debug
-  debug-env:
+  default:
     desc: Debug the environment
     cmds:
-    - env | grep K3D
+    - env 
+
+  run-tests:
+    desc: Run tests
+    cmds:
+      - task: test:helm-wrapper
+
+  
+  help:
+    desc: Show help
+    cmds:
+    - task --list
 
   # k3d
-  cluster-create:
+  k3d:cluster:create:
     desc: Start the k3d cluster
     cmds:
     - task: suites:k3d:cluster-template
@@ -81,15 +89,41 @@ tasks:
     - task: suites:k3d:dns
     - task: suites:k3d:certs
 
-  external-dns:
-    desc: Run the external-dns project
+  k3d:cluster:delete:
+    desc: Destroy the k3d cluster
     cmds:
-    - task: production-rediness-external-dns:default
+    - k3d cluster delete $CLUSTER_NAME
+
+  # production-rediness-series | service discovery
+
+  external-dns:eks:demo:
+    desc: Run the external-dns project
+    requires: &exdns_req
+      vars:
+        - DEMO_EKS_ACCOUNT_ID
+        - DEMO_EKS_REGION
+        - DEMO_EKS_CLUSTER_NAME
+    cmds:
+    - task: suites:production-rediness-external-dns:default
+      vars:
+        KUBECTL_CONTEXT: "arn:aws:eks:{{.DEMO_EKS_REGION}}:{{.DEMO_EKS_ACCOUNT_ID}}:cluster/{{.DEMO_EKS_CLUSTER_NAME}}"
+  
+  external-dns:eks:demo:cleanup:
+    desc: Cleanup the external-dns project
+    requires: *exdns_req
+    cmds:
+    - task: suites:production-rediness-external-dns:cleanup
+      vars:
+        KUBECTL_CONTEXT: "arn:aws:eks:{{.DEMO_EKS_REGION}}:{{.DEMO_EKS_ACCOUNT_ID}}:cluster/{{.DEMO_EKS_CLUSTER_NAME}}"
+
+  # issue with core dns debugging
 
   coredns:
     desc: Run the codedns project
     cmds:
     - task: coredns:dns-test
+
+  # argocd - quick start for demo's
 
   argocd:
     desc: Deploy argocd project
@@ -98,10 +132,14 @@ tasks:
     - task: argocd:secret
     - task: argocd:repo
 
+  # ingress-nginx
+  
   ingress-nginx:
     desc: Deploy nginx project
     cmds:
     - task: ingress-nginx:install
+
+  # config-managment addons
 
   config-managment:
     desc: Run all config-managment tasks
@@ -110,6 +148,8 @@ tasks:
     - task: reflector:install
     - task: descheduler:install
   
+
+  # secrets management | sealed-secrets 
   sealed-secrets:
     desc: Run all sealed-secrets tasks
     cmds:
@@ -119,6 +159,7 @@ tasks:
     - kubectl apply -k .config/sealed-secrets
     - task: sealed-secrets:local-apply
 
+  # policy enforcement | goldilocks
   goldilocks-minimal:
     desc: Run the goldilocks project
     cmds:
@@ -129,6 +170,7 @@ tasks:
     - task: goldilocks:install
     # - open https://goldilocks.k8s.localhost
 
+  # policy enforcement | gatekeeper
   opa-gatekeeper:
     desc: Run the opa-gatekeeper project
     cmds:
@@ -137,16 +179,23 @@ tasks:
     - task: gatekeeper-pm:full-run
     # - open https://gpm.k8s.localhost
   
+
+  # policy enforcement | gatekeeper
   opa-gatekeeper-demo:
+    desc: Run the opa-gatekeeper project
+    cmds:
     - task: gatekeeper:create-constraint-teample
     - task: gatekeeper:create-constraint
     - task: gatekeeper:test-constraint-expect-failure
     - task: gatekeeper:test-constraint-expect-success
   
   opa-gatekeeper-demo-cleanup:
+    desc: Cleanup the opa-gatekeeper project
+    cmds:
     - task: gatekeeper:delete-constraint
     - task: gatekeeper:delete-constraint-template
 
+  # piplines | argo-workflows
   argo-workflows:
     desc: Run the argo-workflows project
     cmds:
@@ -157,31 +206,4 @@ tasks:
     # - task: argo-wokrflows:secret
     # - task: argo-wokrflows:run-workflow  
 
-  run-awx:
-    vars:
-      ADDITIONAL_HOSTS: "awx.k8s.localhost"
-    desc: Run the awx project
-    cmds:
-    # - task: cluster-create
-    # - kubectl apply -k .config/tls
-    # - task: argocd
-    # - task: config-managment
-    # - task: ingress-nginx
-    # - task: awx:secret
-    # - task: awx:install
-    - task: awx:run-awx-playbook
 
-  run-tests:
-    desc: Run tests
-    cmds:
-      - task: test:helm-wrapper
-
-  destroy-env:
-    desc: Destroy the k3d cluster
-    cmds:
-    - k3d cluster delete $CLUSTER_NAME
-
-  help:
-    desc: Show help
-    cmds:
-    - task --list

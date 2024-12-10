@@ -6,13 +6,21 @@ tasks:
 
   default:
     desc: Build the project
+    internal: true
     summary: |
       This example ran in tikalk.dev domain, please make sure to change the domain name in the service.yaml & ingress.yaml file to your domain name.
       - This task will build the project and deploy it to the k3d cluster
-      - I'm using the $KUBECTL_CONTEXT whist using that cluster which alredy has externl-dns fucntional to work with mulitple domains and cloud providers, i chose AWS for this example (but not sure youde notice unless you `dig` / `nslookup`)
-    dir: posts/PGK-part-3
+      - I'm using the {{.KUBECTL_CONTEXT}} whist using that cluster which alredy has externl-dns fucntional to work with mulitple domains and cloud providers, i chose AWS for this example (but not sure youde notice unless you `dig` / `nslookup`)
+    dir: &rundir config/tasks/suites/production-rediness-series/external-dns
     cmds:
     - echo "please makke sure the domain-name in the annotations is correct / or your kube contxt is set to the correct cluster for your domain"
-    - echo "kubectl context - $KUBECTL_CONTEXT"
+    - echo "kubectl context - {{.KUBECTL_CONTEXT}}"
     - echo "current working directory $PWD"
-    - kubectl apply -n default --context $KUBECTL_CONTEXT -k $PWD
+    - kubectl apply -n default --context  {{.KUBECTL_CONTEXT}} -k .
+
+  cleanup:
+    internal: true
+    desc: Cleanup the project
+    dir: *rundir
+    cmds:
+    - kubectl delete -n default --context {{.KUBECTL_CONTEXT}} -k .
