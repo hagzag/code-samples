@@ -1,17 +1,7 @@
 version: '3'
-vars:
-  CYAN: tput setaf 6
-  RED: tput setaf 1
-  YELLOW: tput setaf 3
-  GREEN: tput setaf 2
-  BLUE: tput setaf 1
-  PURPLE: tput setaf 5
-  BG_B: tput setab 0
-  BOLD: tput bold
-  RESET: tput sgr0
-  CLEAR: tput reset
 
 silent: true
+
 env:
   VAULT_ADDR: "https://vault.k8s.localhost"
   VAULT_SKIP_VERIFY: "true"
@@ -37,27 +27,6 @@ env:
         # docker.io/rancher/k3s:latest
         # ghcr.io/k3d-io/k3d-proxy:5.4.6
 tasks:
-  clear:
-    cmds:
-    - sleep 0.1 && {{.CLEAR}}
-  highlight_bg:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.CYAN}} && \
-      {{.BOLD}} && \
-      {{.BG_B}}
-  highlight_normal:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.CYAN}} && \
-      {{.BOLD}}
-  reset:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.RESET}}
   
   docker-pull-images:
     cmds:

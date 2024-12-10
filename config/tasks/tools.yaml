@@ -1,16 +1,5 @@
 # forked from https://raw.githubusercontent.com/gruberdev/local-gitops/main/tasks/tools.yaml 
 version: '3'
-vars:
-  CYAN: tput setaf 6
-  RED: tput setaf 1
-  YELLOW: tput setaf 3
-  GREEN: tput setaf 2
-  BLUE: tput setaf 1
-  PURPLE: tput setaf 5
-  BG_B: tput setab 0
-  BOLD: tput bold
-  RESET: tput sgr0
-  CLEAR: tput reset
 
 silent: true
 env:
@@ -19,27 +8,6 @@ env:
   HOSTCTL: 1.1.4
 
 tasks:
-  clear:
-    cmds:
-    - sleep 0.1 && {{.CLEAR}}
-  highlight_bg:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.CYAN}} && \
-      {{.BOLD}} && \
-      {{.BG_B}}
-  highlight_normal:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.CYAN}} && \
-      {{.BOLD}}
-  reset:
-    cmds:
-    - |
-      sleep 0.1 && \
-      {{.RESET}}
 
   autocomplete-taskfile:
     cmds: #see https://github.com/go-task/task/pull/906/files#diff-19fd876fb56da88a1becb80817b52db1a40e8491641d547913b93bb7ecda3d22
