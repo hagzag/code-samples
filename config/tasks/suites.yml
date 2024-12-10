@@ -17,8 +17,8 @@ includes:
   goldilocks: ./suites/goldilocks/Taskfile.yaml
 
   # # policy
-  # gatekeeper: ./config/tasks/suites/gatekeeper/Taskfile.yaml
-  # gatekeeper-pm: ./config/tasks/suites/gatekeeper-policy-manager/Taskfile.yaml
+  gatekeeper: ./suites/gatekeeper/Taskfile.yaml
+  gatekeeper-pm: ./suites/gatekeeper-policy-manager/Taskfile.yaml
 
   # # observability
   # monitoring-n-logging: ./config/tasks/monitoring-n-logging.yaml
