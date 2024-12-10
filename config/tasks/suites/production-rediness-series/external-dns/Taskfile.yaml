@@ -4,7 +4,7 @@ silent: true
 
 tasks:
 
-  pkg-part-3:
+  default:
     desc: Build the project
     summary: |
       This example ran in tikalk.dev domain, please make sure to change the domain name in the service.yaml & ingress.yaml file to your domain name.

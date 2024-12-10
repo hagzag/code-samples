@@ -13,50 +13,49 @@ includes:
   # tests
   test: ./config/tasks/test.yaml
   # posts
-  k3d: ./posts/k3d-intro/k3d-intro.yaml
-  external-dns: ./posts/PGK-part-3/tasks.yaml
-  coredns: ./posts/coredns/tasks.yaml
+  k3d: ./config/tasks/suites/k3d-intro/Taskfile.yaml
+  production-rediness-external-dns: ./config/tasks/suites/production-rediness-series/external-dns/Taskfile.yaml
+  coredns: ./config/tasks/suites/coredns/Taskfile.yaml
   
   ingress-nginx: ./config/tasks/ingress-nginx.yaml
-  pre-commit: ./posts/pre-commit/Taskfile.yaml
+  pre-commit: ./config/tasks/suites/pre-commit/Taskfile.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
 
   # common tools foor configuration managment   
   
-  # config-managment: ./posts/config/tasks.yaml
   reloader: ./config/tasks/reloader.yaml
   descheduler: ./config/tasks/descheduler.yaml
   reflector: ./config/tasks/reflector.yaml
 
-  vault: ./posts/vault-eso/tasks.yaml
+  vault: ./config/tasks/suites/vault-eso/Taskfile.yaml
   sealed-secrets: ./config/tasks/sealed-secrets.yaml
 
-  awx: ./posts/awx/tasks.yaml
+  awx: ./config/tasks/suites/awx/Taskfile.yaml
   # applications / packages
   cicd-toolz: ./config/tasks/cicd-toolz.yaml
   # helm chart registry
   chartmeusem: ./config/tasks/chartmeusem.yaml
   
   # scaling
-  goldilocks: ./posts/goldilocks/Taskfile.yaml
+  goldilocks: ./config/tasks/suites/goldilocks/Taskfile.yaml
 
   # policy
-  gatekeeper: ./posts/gatekeeper/Taskfile.yaml
-  gatekeeper-pm: ./posts/gatekeeper-policy-manager/Taskfile.yaml
+  gatekeeper: ./config/tasks/suites/gatekeeper/Taskfile.yaml
+  gatekeeper-pm: ./config/tasks/suites/gatekeeper-policy-manager/Taskfile.yaml
 
   # observability
   monitoring-n-logging: ./config/tasks/monitoring-n-logging.yaml
 
   # iac
-  iac: ./posts/terraform/Taskfile.yaml
+  iac: ./config/tasks/suites/terraform/Taskfile.yaml
 
   # whoami-demo-app via nginx
   whoami: ./config/tasks/whoami.yaml
   
 
   # aws-sso
-  aws-sso: ./posts/aws-sso/Taskfile.yaml
+  aws-sso: ./config/tasks/suites/aws-sso/Taskfile.yaml
   
   # argo-workflows
   argocd: ./config/tasks/argo-cd.yaml
@@ -76,7 +75,7 @@ tasks:
   external-dns:
     desc: Run the external-dns project
     cmds:
-    - task: external-dns:pkg-part-3
+    - task: production-rediness-external-dns:default
 
   coredns:
     desc: Run the codedns project
