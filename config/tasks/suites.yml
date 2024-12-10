@@ -14,7 +14,7 @@ includes:
   awx: ./suites/awx/Taskfile.yaml
 
   # # scaling
-  # goldilocks: ./config/tasks/suites/goldilocks/Taskfile.yaml
+  goldilocks: ./suites/goldilocks/Taskfile.yaml
 
   # # policy
   # gatekeeper: ./config/tasks/suites/gatekeeper/Taskfile.yaml
