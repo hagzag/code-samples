@@ -79,7 +79,7 @@ tasks:
     prompt: "please approve the commit message '{{.COMMIT_MSG}}'"
     cmds:
     - echo "commiting changes to pr with message \"$COMMIT_MSG\""
-    - git status -sb || git commit -m "$COMMIT_MSG" 
+    - git commit -m "$COMMIT_MSG" || echo "no changes to commit"
 
   push-pr-branch-changes-to-default-remote:
     desc: Push changes to pr branch
@@ -95,7 +95,8 @@ tasks:
     # - git diff --name-only {{.DEFAULT_BRANCH}} {{.PR_NAME}}
     - git diff --name-only {{.DEFAULT_BRANCH}} {{.PR_NAME}} | xargs git add
     - task: commit-changes-to-local-feature-brnach
-    # - git pull --rebase origin {{.DEFAULT_BRANCH}}
+    - git fetch origin
+    - git checkout {{.DEFAULT_BRANCH}}
     # - git merge {{.PR_NAME}}
     # - git push {{.DEFAULT_REMOTE}} {{.DEFAULT_BRANCH}}
   
