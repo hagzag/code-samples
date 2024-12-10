@@ -11,7 +11,7 @@ includes:
   coredns: ./suites/coredns/Taskfile.yaml
   pre-commit: ./suites/pre-commit/Taskfile.yaml
   vault: ./suites/vault-eso/Taskfile.yaml
-  # awx: ./suites/awx/Taskfile.yaml
+  awx: ./suites/awx/Taskfile.yaml
 
   # # scaling
   # goldilocks: ./config/tasks/suites/goldilocks/Taskfile.yaml
