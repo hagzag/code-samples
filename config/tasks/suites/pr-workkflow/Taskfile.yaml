@@ -14,15 +14,17 @@ tasks:
         - PR_NAME
     cmds:
     - task: open-pr-with-name-as-input
-    - task: add-changes-to-pr-brnach
-    - task: commit-changes-to-local-feature-brnach
-    # - task: push-pr-branch-changes-to-default-remote
-    # - task: merge-pr
+
   workflow:continue:
     interactive: true
     desc: Continue the workflow
     cmds:
     - task: commit-changes-to-local-feature-brnach
+
+  workflow:publish:  
+    interactive: true
+    desc: Continue the workflow
+    cmds:
     - task: push-pr-branch-changes-to-default-remote
 
   workflow:close:
@@ -90,5 +92,10 @@ tasks:
   merge-feature-branch-into-default-branch:
     desc: Merge PR
     cmds:
-    - echo "merging PR"
+    # - git diff --name-only {{.DEFAULT_BRANCH}} {{.PR_NAME}}
+    - git diff --name-only {{.DEFAULT_BRANCH}} {{.PR_NAME}} | xargs git add
+    - task: commit-changes-to-local-feature-brnach
+    # - git pull --rebase origin {{.DEFAULT_BRANCH}}
+    # - git merge {{.PR_NAME}}
+    # - git push {{.DEFAULT_REMOTE}} {{.DEFAULT_BRANCH}}
   
