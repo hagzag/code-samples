@@ -96,7 +96,7 @@ tasks:
     - git diff --name-only {{.DEFAULT_BRANCH}} {{.PR_NAME}} | xargs git add
     - task: commit-changes-to-local-feature-brnach
     - git fetch origin
-    # - git checkout {{.DEFAULT_BRANCH}}
-    # - git merge {{.PR_NAME}}
-    # - git push {{.DEFAULT_REMOTE}} {{.DEFAULT_BRANCH}}
+    - git checkout {{.DEFAULT_BRANCH}}
+    - git merge {{.PR_NAME}}
+    - git push {{.DEFAULT_REMOTE}} {{.DEFAULT_BRANCH}}
   
