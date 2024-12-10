@@ -1,0 +1,19 @@
+version: '3'
+
+includes:
+  sealed-secrets: ./sealed-secrets.yaml
+  # applications / packages
+  cicd-toolz: ./cicd-toolz.yaml
+  # helm chart registry
+  chartmeusem: ./chartmeusem.yaml
+  # whoami-demo-app via nginx
+  whoami: ./whoami.yaml
+  # argo-workflows
+  argocd: ./argo-cd.yaml
+  argo-workflows: ./argo-workflows.yaml
+  
+  ingress-nginx: ./ingress-nginx.yaml
+
+  reloader: ./reloader.yaml
+  descheduler: ./descheduler.yaml
+  reflector: ./reflector.yaml
