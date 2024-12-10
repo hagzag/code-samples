@@ -6,7 +6,7 @@ vars:
 
 tasks:
 
-  workflow:
+  workflow:init:
     interactive: true
     desc: Run the workflow
     requires:
@@ -15,9 +15,27 @@ tasks:
     cmds:
     - task: open-pr-with-name-as-input
     - task: add-changes-to-pr-brnach
-    - task: commit-changes-to-pr-brnach
-    # - task: push-changes-to-pr-branch
+    - task: commit-changes-to-local-feature-brnach
+    # - task: push-pr-branch-changes-to-default-remote
     # - task: merge-pr
+  workflow:continue:
+    interactive: true
+    desc: Continue the workflow
+    cmds:
+    - task: commit-changes-to-local-feature-brnach
+    - task: push-pr-branch-changes-to-default-remote
+
+  workflow:close:
+    interactive: true
+    desc: Continue the workflow
+    cmds:
+    - task: merge-feature-branch-into-default-branch
+
+  workflow:reset:
+    interactive: true
+    desc: Reset the workflow
+    cmds:
+    - task: reset:soft
 
   reset:soft:
     # internal: true
@@ -53,7 +71,7 @@ tasks:
     - git add .
     - git status -sb
   
-  commit-changes-to-pr-brnach:
+  commit-changes-to-local-feature-brnach:
     desc: Commit changes to pr branch
     interactive: true
     prompt: "please approve the commit message '{{.COMMIT_MSG}}'"
@@ -61,13 +79,15 @@ tasks:
     - echo "commiting changes to pr with message \"$COMMIT_MSG\""
     - git status -sb && git commit -m "$COMMIT_MSG"
 
-  push-changes-to-pr-branch:
+  push-pr-branch-changes-to-default-remote:
     desc: Push changes to pr branch
+    preconditions:
+      - git branch --show-current | grep {{.PR_NAME}}
     cmds:
     - echo "pushing changes to pr branch"
     - git push {{.DEFAULT_REMOTE}} {{.PR_NAME}}
 
-  merge-pr:
+  merge-feature-branch-into-default-branch:
     desc: Merge PR
     cmds:
     - echo "merging PR"
