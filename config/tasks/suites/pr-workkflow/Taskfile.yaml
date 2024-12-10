@@ -51,7 +51,7 @@ tasks:
     cmds:
     - echo "adding changes to pr branch"
     - git add .
-    - git status -s
+    - git status -sb
   
   commit-changes-to-pr-brnach:
     desc: Commit changes to pr branch
@@ -59,7 +59,7 @@ tasks:
     prompt: "please approve the commit message '{{.COMMIT_MSG}}'"
     cmds:
     - echo "commiting changes to pr with message \"$COMMIT_MSG\""
-    - git commit -m "$COMMIT_MSG"
+    - git status -sb && git commit -m "$COMMIT_MSG"
 
   push-changes-to-pr-branch:
     desc: Push changes to pr branch
