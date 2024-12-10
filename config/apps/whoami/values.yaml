@@ -9,10 +9,11 @@ whoami:
       - host: &host whoami.k8s.localhost
         paths:
           - /
-    tls:
+    tls: 
       - secretName: tls-secret
         hosts:
           - *host
+
   resources:
     # limits:
     #   cpu: 100m

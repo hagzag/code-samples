@@ -1,0 +1,7 @@
+version: '3'
+
+includes:
+  aws-sso: ./suites/aws-sso/Taskfile.yaml
+  iac: ./suites/terraform/Taskfile.yaml
+  k3d: ./suites/k3d-playground/Taskfile.yaml
+  

@@ -6,18 +6,26 @@ dotenv:
 - .env
 
 includes:
+
+  # tests
+  test: ./config/tasks/test.yaml
+
   # utils
   helm: ./config/tasks/helm.yaml
   templates: ./config/tasks/templates.yaml
   utils: ./config/tasks/utils.yaml
-  # tests
-  test: ./config/tasks/test.yaml
-  # posts
-  k3d: ./config/tasks/suites/k3d-intro/Taskfile.yaml
+  
+  ingress-nginx: ./config/tasks/ingress-nginx.yaml
+  
+
+  # suites
+  suites: 
+    taskfile: ./config/tasks/suites.yml
+    
+  
   production-rediness-external-dns: ./config/tasks/suites/production-rediness-series/external-dns/Taskfile.yaml
   coredns: ./config/tasks/suites/coredns/Taskfile.yaml
   
-  ingress-nginx: ./config/tasks/ingress-nginx.yaml
   pre-commit: ./config/tasks/suites/pre-commit/Taskfile.yaml
   # common tools for this repo
   tools: ./config/tasks/tools.yaml
@@ -47,15 +55,8 @@ includes:
   # observability
   monitoring-n-logging: ./config/tasks/monitoring-n-logging.yaml
 
-  # iac
-  iac: ./config/tasks/suites/terraform/Taskfile.yaml
-
   # whoami-demo-app via nginx
   whoami: ./config/tasks/whoami.yaml
-  
-
-  # aws-sso
-  aws-sso: ./config/tasks/suites/aws-sso/Taskfile.yaml
   
   # argo-workflows
   argocd: ./config/tasks/argo-cd.yaml
@@ -64,13 +65,21 @@ includes:
 
 tasks:
 
+
+  # debug
+  debug-env:
+    desc: Debug the environment
+    cmds:
+    - env | grep K3D
+
+  # k3d
   cluster-create:
     desc: Start the k3d cluster
     cmds:
-    - task: k3d:cluster-template
-    - task: k3d:cluster-create
-    - task: k3d:dns
-    - task: k3d:certs
+    - task: suites:k3d:cluster-template
+    - task: suites:k3d:cluster-create
+    - task: suites:k3d:dns
+    - task: suites:k3d:certs
 
   external-dns:
     desc: Run the external-dns project

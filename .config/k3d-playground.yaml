@@ -32,7 +32,7 @@ registries:
           - http://registry.localhost:5002
 
 volumes:
-- volume: "/Users/hagzag/Projects/code-samples/storage:/var/lib/rancher/k3s/storage"
+- volume: "/Users/hagzag/Projects/training/code-samples/storage:/var/lib/rancher/k3s/storage"
   nodeFilters:
   - server:0
   - agent:*

@@ -76,9 +76,14 @@ tasks:
       see `cluster-create` summary for more details.
     generates:
     - .config/k3d.yaml
+    requires:
+      vars:
+        - K3D_LOCAL_STORAGE_DIR_NAME
+        - CLUSTER_NAME
     cmds:
     - task: hosts-file
     - |
+      echo "K3D_LOCAL_STORAGE_PATH: $K3D_LOCAL_STORAGE_PATH"
       cat<<EOF>.config/k3d-{{.CLUSTER_NAME}}.yaml
       #
       # Twinker with the template at your own risk :)
@@ -114,7 +119,7 @@ tasks:
                 - http://registry.localhost:5002
 
       volumes:
-      - volume: "${PWD}/storage:/var/lib/rancher/k3s/storage"
+      - volume: "{{.ROOT_DIR}}/{{.K3D_LOCAL_STORAGE_DIR_NAME}}:/var/lib/rancher/k3s/storage"
         nodeFilters:
         - server:0
         - agent:*
