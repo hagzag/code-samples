@@ -5,4 +5,5 @@ includes:
   iac: ./suites/terraform/Taskfile.yaml
   k3d: ./suites/k3d-playground/Taskfile.yaml
   production-rediness-external-dns: ./suites/production-rediness-series/external-dns/Taskfile.yaml
-  
+  git-workflow: ./suites/git-workkflow/Taskfile.yaml
+  git: ./suites/git-workkflow/git.yaml
