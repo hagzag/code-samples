@@ -25,32 +25,16 @@ includes:
   suites: 
     taskfile: ./config/tasks/suites.yml
     
-  coredns: ./config/tasks/suites/coredns/Taskfile.yaml
-  pre-commit: ./config/tasks/suites/pre-commit/Taskfile.yaml
-  
-  
   reloader: ./config/tasks/reloader.yaml
   descheduler: ./config/tasks/descheduler.yaml
   reflector: ./config/tasks/reflector.yaml
-
-  vault: ./config/tasks/suites/vault-eso/Taskfile.yaml
+  
   sealed-secrets: ./config/tasks/sealed-secrets.yaml
 
-  awx: ./config/tasks/suites/awx/Taskfile.yaml
   # applications / packages
   cicd-toolz: ./config/tasks/cicd-toolz.yaml
   # helm chart registry
   chartmeusem: ./config/tasks/chartmeusem.yaml
-  
-  # scaling
-  goldilocks: ./config/tasks/suites/goldilocks/Taskfile.yaml
-
-  # policy
-  gatekeeper: ./config/tasks/suites/gatekeeper/Taskfile.yaml
-  gatekeeper-pm: ./config/tasks/suites/gatekeeper-policy-manager/Taskfile.yaml
-
-  # observability
-  monitoring-n-logging: ./config/tasks/monitoring-n-logging.yaml
 
   # whoami-demo-app via nginx
   whoami: ./config/tasks/whoami.yaml
@@ -121,7 +105,7 @@ tasks:
   coredns:
     desc: Run the codedns project
     cmds:
-    - task: coredns:dns-test
+    - task: suites:coredns:dns-test
 
   # argocd - quick start for demo's
 
@@ -205,5 +189,3 @@ tasks:
     # - task: argo-wokrflows:full-run
     # - task: argo-wokrflows:secret
     # - task: argo-wokrflows:run-workflow  
-
-
