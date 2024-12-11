@@ -3,7 +3,7 @@ version: '3'
 silent: true
 
 includes:
-  helm: helm.yaml
+  helm: ../utils/helm.yaml
 
 vars:
   rf_controller_name: &rfname reflector

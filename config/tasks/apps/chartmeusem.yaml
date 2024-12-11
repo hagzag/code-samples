@@ -25,4 +25,4 @@ tasks:
   rm:
     dir: config/apps/
     cmds:
-    - delete -f chartmuseum.yaml
+    - kubectl delete -n argocd -f chartmuseum.yaml
