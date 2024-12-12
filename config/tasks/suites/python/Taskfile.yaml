@@ -1,0 +1,42 @@
+version: '3'
+
+silent: true
+
+
+vars:
+  python_version: 3.12
+  python_venv: .venv
+
+tasks:
+
+  install-poetry:
+    cmds:
+      - pip install poetry
+
+  install-tox:
+    cmds:
+      - pip install tox
+
+  install-pre-commit:
+    cmds:
+      - pip install pre-commit
+
+  setup-env:
+    cmds:
+      - rm -rf {{.python_venv}}  || true 
+      - pyenv local {{.python_version}}
+      - source {{.python_venv}}/bin/activate 
+      - pip install --upgrade pip
+      - task: install-poetry
+      - task: install-tox
+      - task: install-pre-commit
+      - task: pre-commit
+      - pre-commit
+      - poetry install
+      
+
+
+  install:
+    cmds:
+      - task: install-poetry
+
