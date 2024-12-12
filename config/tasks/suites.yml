@@ -21,5 +21,7 @@ includes:
   gatekeeper: ./suites/gatekeeper/Taskfile.yaml
   gatekeeper-pm: ./suites/gatekeeper-policy-manager/Taskfile.yaml
 
+  python: ./suites/python/Taskfile.yaml
+
   # # observability
   #TODO: monitoring-n-logging: ./monitoring-n-logging.yaml
