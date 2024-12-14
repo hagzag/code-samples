@@ -1,6 +1,6 @@
 # 🛠️ Tasks & The code behind the posts ...
 
-[![Lint Code Base](https://github.com/hagzag/code-samples/actions/workflows/super-linter.yml/badge.svg)](https://github.com/hagzag/code-samples/actions/workflows/super-linter.yml)
+[![Lint Code Base](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml/badge.svg)](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml)
 
 This repo was setup to centralize code examples I mention in different blog posts, 
 this is part of my attempt to manage all these snippets / samples in once place.
