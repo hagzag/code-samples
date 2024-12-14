@@ -79,3 +79,18 @@ tasks:
         echo "Pushing image: $new_image"
         docker push $new_image
       done
+
+  super-linter:
+    cmds:
+      - |
+        docker run --rm \
+          -v $(pwd):/ws \
+          -e DISABLE_ERRORS=true \
+          -e RUN_LOCAL=true \
+          -e DEFAULT_WORKSPACE=/ws \
+          -e ANSIBLE_DIRECTORY=/workspace \
+          -e LINTER_RULES_PATH=/workspace/.github/linters \
+          -e CREATE_LOG_FILE=true \
+          -e LOG_FILE=super-linter.log \
+          github/super-linter:v5.0.0 \
+          sh -c 'echo "Running super-linter"; /action/lib/linter.sh'
