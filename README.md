@@ -68,3 +68,8 @@ task: Available tasks for this project:
 ## 🔍 pre-commit config
 
 - see [pre-commit config](./config/tasks/suites/pre-commit/README.md)
+
+
+## Using Vscode and go-tak extention ...
+
+![](https://i.imgur.com/ZJn0EO5.png)

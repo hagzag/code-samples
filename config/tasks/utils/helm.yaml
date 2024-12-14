@@ -1,11 +1,7 @@
 version: '3'
 
-# silent: true
-
-
-
 tasks:
-  
+
   # utility tasks - a.k.a functions
   dependency_build:
     requires:
@@ -61,36 +57,6 @@ tasks:
       - helm repo add {{.CHART}} {{.REPO_URL}}
       # - helm repo update
   
-  
-  # external-secrets:
-  #   cmds:
-  #     - template_apply infra/external-secrets external-secrets
-
-  # repo:
-  #   cmds:
-  #     - repo_add argo https://argoproj.github.io/argo-helm
-
-  # argocd:
-  #   cmds:
-  #     - task: dependency_build 
-  #       vars:
-  #         CHART_FOLDER: infra/argocd
-  #         CHART: argocd
-
-  # external-dns:
-  #   cmds:
-  #     - task: dependency_build 
-  #       vars:
-  #         CHART_FOLDER: infra/external-dns
-  #         CHART: external-dns
-
-  # cert-manager:
-  #   cmds:
-  #     - task: dependency_build 
-  #       vars:
-  #         CHART_FOLDER: infra/cert-manager
-  #         CHART: cert-manager
-
   create-wrapper-chart:
     requires:
       vars:
@@ -114,3 +80,37 @@ tasks:
             version: '{{.APP_VERSION}}'
             repository: "{{.APP_REPO}}"
         EOF
+
+########################################################
+## example usage
+########################################################
+
+#
+# external-secrets:
+#   cmds:
+#     - template_apply infra/external-secrets external-secrets
+
+# repo:
+#   cmds:
+#     - repo_add argo https://argoproj.github.io/argo-helm
+
+# argocd:
+#   cmds:
+#     - task: dependency_build 
+#       vars:
+#         CHART_FOLDER: infra/argocd
+#         CHART: argocd
+
+# external-dns:
+#   cmds:
+#     - task: dependency_build 
+#       vars:
+#         CHART_FOLDER: infra/external-dns
+#         CHART: external-dns
+
+# cert-manager:
+#   cmds:
+#     - task: dependency_build 
+#       vars:
+#         CHART_FOLDER: infra/cert-manager
+#         CHART: cert-manager
