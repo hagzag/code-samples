@@ -1,6 +1,8 @@
 # 🛠️ Tasks & The code behind the posts
 
-[![Lint Code Base](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml/badge.svg)](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml)
+[![Lint Code Base](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml/badge.svg)](https://github.com/hagzag/just-do-it/actions/workflows/super-linter.yml) | 
+[![pipeline status](https://gitlab.tikalk.dev/tikalk/users/hagzag/code-samples/badges/main/pipeline.svg)](https://gitlab.tikalk.dev/tikalk/users/hagzag/code-samples/-/commits/main)
+
 
 This repository was setup to centralize code examples I mention in different blog posts,  
 this is part of my attempt to manage all these snippets / samples in once place.
