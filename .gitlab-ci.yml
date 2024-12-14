@@ -1,0 +1,3 @@
+include:
+  # - component: gitlab.com/components/super-linter/super-linter@1.2.5
+  - component: gitlab.com/guided-explorations/ci-components/super-linter/super-linter@1.2.0
