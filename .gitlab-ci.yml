@@ -1,3 +1,4 @@
 include:
-  # - component: gitlab.com/components/super-linter/super-linter@1.2.5
-  - component: gitlab.com/guided-explorations/ci-components/super-linter/super-linter@1.2.0
+  - project: 'tikalk/engineering/tools/ci-templates'
+    ref: 'super-linter'
+    file: stages/test/.super-linter.gitlab-ci.yml
